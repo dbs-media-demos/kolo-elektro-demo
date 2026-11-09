@@ -11,8 +11,9 @@ const out = path.resolve(import.meta.dirname, "../src/assets/hero");
 const SHOTS = [
   { name: "dim-wide", still: "off", width: 1600, height: 1000 },
   { name: "lit-wide", still: "on", width: 1600, height: 1000 },
-  { name: "dim-tall", still: "off", width: 430, height: 860, scale: 2, mobile: true },
-  { name: "lit-tall", still: "on", width: 430, height: 860, scale: 2, mobile: true },
+  // The phone stills come from the same desktop scene (the scene never runs on a phone), framed tall
+  { name: "dim-tall", still: "off", width: 1080, height: 2160 },
+  { name: "lit-tall", still: "on", width: 1080, height: 2160 },
 ];
 
 const browser = await openBrowser();

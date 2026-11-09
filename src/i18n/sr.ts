@@ -30,6 +30,7 @@ export const sr: Record<string, string> = {
   Electrician: "Električar",
   "The electrician": "Električar",
   "who shows up when promised.": "koji dođe kad kaže.",
+  "Emergency callouts 24/7": "Hitne intervencije 0–24",
   "Faults, rewiring, panels, lighting and EV chargers across {area}. Callouts 24/7, and the price before we start.":
     "Kvarovi, nove instalacije, table, rasveta i punjači za automobile — {area}. Hitno 0–24, a cenu znate pre početka rada.",
   "Get a free quote": "Besplatna ponuda",

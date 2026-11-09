@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Caveat, Geologica, Instrument_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import "./held.css";
 import { SmoothScroll } from "@/components/layout/SmoothScroll";
 import { agencyName, noindex, site } from "@/lib/site";
 

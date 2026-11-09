@@ -45,7 +45,7 @@ export function Area() {
               {biz.address.full}
             </address>
           )}
-          <OpenBadge className="mt-4 text-sm" />
+          <OpenBadge className="mt-4 text-sm" always={t("Emergency callouts 24/7")} />
           {biz.hours && (
             <dl className="mt-6 max-w-sm space-y-2 text-sm">
               {weekFromMonday(biz.hours).map((h) => (

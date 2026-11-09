@@ -26,6 +26,8 @@
 - Fictional business: Strujna 12, 21000 Novi Sad, +381 21 000 0000, zdravo@koloelektro.com. A web search found no electrician called Kolo in Novi Sad.
 - Reviews are samples and labelled as such.
 - Checked in headless Chromium with software WebGL, so real-device frame rates have not been measured.
+- Phones and tablets never load three.js: only a big screen with a mouse (`(min-width: 1024px) and (hover: hover) and (pointer: fine)`, no reduced motion, no Save-Data) imports panelScene. Phones get dark and lit stills rendered from the desktop scene (`node scripts/capture-stills.mjs`), crossfade once to lit, and the main switch flips them.
+- On phones the sections from Usluge to Pitanja skip layout until near the screen, holding their measured height from `src/app/held.css`. After changing section content: build, `node scripts/held-heights.mjs`, build again.
 
 ## Portfolio copy
 EN title: Kolo Elektro — electrician, Novi Sad

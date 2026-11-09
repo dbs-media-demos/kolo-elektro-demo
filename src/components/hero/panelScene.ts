@@ -9,11 +9,11 @@ import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js
  * wires move across the board. The pointer is the electrician's headlamp. Everything runs on one
  * switch: close the main breaker and the board comes up row by row, then the lamp strikes on.
  *
- * `lite` (phones) keeps the composition but drops wire count, slots, dust and shadow resolution.
+ * Desktop only: phones and tablets get stills rendered from this scene (scripts/capture-stills.mjs)
+ * and never download three.js.
  */
 
 export type PanelSceneOptions = {
-  lite: boolean;
   onFirstFrame?: () => void;
   onPower?: (on: boolean) => void;
   /** Draw fixed "after power-up" or "before power-up" frames (fallback stills), no autoplay. */
@@ -146,14 +146,13 @@ function glowTexture() {
 }
 
 export function createPanelScene(canvas: HTMLCanvasElement, opts: PanelSceneOptions): PanelScene {
-  const { lite } = opts;
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: !lite, alpha: false, powerPreference: "high-performance", preserveDrawingBuffer: Boolean(opts.still) });
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: "high-performance", preserveDrawingBuffer: Boolean(opts.still) });
   renderer.setClearColor(0x070807);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.05;
   renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = lite ? THREE.PCFShadowMap : THREE.PCFSoftShadowMap;
-  let pixelRatio = Math.min(window.devicePixelRatio || 1, lite ? 1.25 : 1.75);
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  let pixelRatio = Math.min(window.devicePixelRatio || 1, 1.75);
   renderer.setPixelRatio(pixelRatio);
 
   const scene = new THREE.Scene();
@@ -187,7 +186,7 @@ export function createPanelScene(canvas: HTMLCanvasElement, opts: PanelSceneOpti
 
   // ── Materials ──
   const mat = {
-    wall: keep(new THREE.MeshStandardMaterial({ color: 0x4b4e50, roughness: 0.94, bumpMap: lite ? null : keep(plasterBump()), bumpScale: 0.9 })),
+    wall: keep(new THREE.MeshStandardMaterial({ color: 0x4b4e50, roughness: 0.94, bumpMap: keep(plasterBump()), bumpScale: 0.9 })),
     steel: keep(new THREE.MeshStandardMaterial({ color: 0x24251f, roughness: 0.55, metalness: 0.5 })),
     back: keep(new THREE.MeshStandardMaterial({ color: 0x2d2e29, roughness: 0.82, metalness: 0.1 })),
     rail: keep(new THREE.MeshStandardMaterial({ color: 0x9a9c97, roughness: 0.35, metalness: 0.9 })),
@@ -347,7 +346,7 @@ export function createPanelScene(canvas: HTMLCanvasElement, opts: PanelSceneOpti
   });
   board.add(tabs);
 
-  if (!lite) {
+  {
     // The slots along the ducts: the detail that reads as "someone careful built this"
     const count = 58;
     const teeth = new THREE.InstancedMesh(keep(new THREE.BoxGeometry(0.018, 0.13, 0.012)), keep(new THREE.MeshStandardMaterial({ color: 0x141512, roughness: 0.9 })), count * 4);
@@ -379,7 +378,7 @@ export function createPanelScene(canvas: HTMLCanvasElement, opts: PanelSceneOpti
   // ── Wires ──
   const wires: Record<"brown" | "black" | "grey" | "blue" | "earth", THREE.BufferGeometry[]> = { brown: [], black: [], grey: [], blue: [], earth: [] };
   const pulseGeos: THREE.BufferGeometry[] = [];
-  const radial = lite ? 5 : 7;
+  const radial = 7;
   const addWire = (color: keyof typeof wires, pts: [number, number, number][], radius: number, opt?: { pulse?: boolean; seg?: number }) => {
     const curve = new THREE.CatmullRomCurve3(
       pts.map((p) => new THREE.Vector3(...p)),
@@ -387,7 +386,7 @@ export function createPanelScene(canvas: HTMLCanvasElement, opts: PanelSceneOpti
       "catmullrom",
       0.35,
     );
-    const seg = opt?.seg ?? (lite ? 12 : 22);
+    const seg = opt?.seg ?? 22;
     wires[color].push(new THREE.TubeGeometry(curve, seg, radius, radial, false));
     if (opt?.pulse) {
       const g = new THREE.TubeGeometry(curve, seg * 2, radius * 1.08, 5, false);
@@ -400,7 +399,6 @@ export function createPanelScene(canvas: HTMLCanvasElement, opts: PanelSceneOpti
   const phase: (keyof typeof wires)[] = ["brown", "black", "grey"];
   units.forEach((u, i) => {
     if (u.kind === "main") return;
-    if (lite && i % 2) return;
     const y = ROW_Y[u.row];
     const color = phase[i % 3];
     const top = y + 0.245;
@@ -414,11 +412,11 @@ export function createPanelScene(canvas: HTMLCanvasElement, opts: PanelSceneOpti
         [u.x, y + 0.39, 0.19],
       ],
       0.0135,
-      { pulse: !lite && i % 4 === 0 },
+      { pulse: i % 4 === 0 },
     );
   });
   // Neutrals and earths run down the sides, combed parallel, into their brass bars
-  for (let i = 0; i < (lite ? 3 : 7); i++) {
+  for (let i = 0; i < 7; i++) {
     const x = 1.515 + i * 0.027;
     const barY = -0.05 - i * 0.106;
     for (const side of [1, -1]) {
@@ -429,7 +427,7 @@ export function createPanelScene(canvas: HTMLCanvasElement, opts: PanelSceneOpti
         [side * x, barY + 0.14, 0.15],
         [side * 1.56, barY + 0.02, 0.135],
         [side * 1.56, barY, 0.12],
-      ], 0.0125, { seg: lite ? 18 : 30 });
+      ], 0.0125, { seg: 30 });
     }
   }
   // The heavy feed: comes through the top and lands in the main switch
@@ -472,7 +470,7 @@ export function createPanelScene(canvas: HTMLCanvasElement, opts: PanelSceneOpti
     const merged = keep(mergeGeometries(wires[c])!);
     const m = new THREE.Mesh(merged, mat[c]);
     m.castShadow = true;
-    m.receiveShadow = !lite;
+    m.receiveShadow = true;
     board.add(m);
     wires[c].forEach((g) => g.dispose());
   });
@@ -529,10 +527,10 @@ export function createPanelScene(canvas: HTMLCanvasElement, opts: PanelSceneOpti
   const spot = new THREE.SpotLight(0xffd6a6, 0, 16, 0.82, 0.8, 1.5);
   spot.position.set(0, 0.05, 0);
   spot.castShadow = true;
-  spot.shadow.mapSize.setScalar(lite ? 1024 : 2048);
+  spot.shadow.mapSize.setScalar(2048);
   spot.shadow.bias = -0.0012;
   spot.shadow.normalBias = 0.025;
-  spot.shadow.radius = lite ? 2 : 5;
+  spot.shadow.radius = 5;
   spot.shadow.camera.near = 0.5;
   spot.shadow.camera.far = 12;
   lamp.add(spot);
@@ -562,10 +560,10 @@ export function createPanelScene(canvas: HTMLCanvasElement, opts: PanelSceneOpti
   scene.add(headlamp, headlamp.target);
   const inner = new THREE.PointLight(0xffb45c, 0, 5, 1.8);
   inner.position.set(0, 1.0, 0.95);
-  if (!lite) board.add(inner);
+  board.add(inner);
 
   // ── Dust in the beam ──
-  const dustCount = lite ? 40 : 140;
+  const dustCount = 140;
   const dustGeo = keep(new THREE.BufferGeometry());
   const dustPos = new Float32Array(dustCount * 3);
   const dustSeed = new Float32Array(dustCount);
@@ -594,12 +592,12 @@ export function createPanelScene(canvas: HTMLCanvasElement, opts: PanelSceneOpti
   scene.add(dust);
 
   // ── Sparks, once, as the main closes ──
-  const SPARKS = lite ? 22 : 54;
+  const SPARKS = 54;
   const sparkGeo = keep(new THREE.BufferGeometry());
   const sparkPos = new Float32Array(SPARKS * 3);
   const sparkVel = new Float32Array(SPARKS * 3);
   sparkGeo.setAttribute("position", new THREE.BufferAttribute(sparkPos, 3));
-  const sparkMat = keep(new THREE.PointsMaterial({ color: new THREE.Color(2.6, 1.7, 0.7), size: lite ? 0.05 : 0.038, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false }));
+  const sparkMat = keep(new THREE.PointsMaterial({ color: new THREE.Color(2.6, 1.7, 0.7), size: 0.038, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false }));
   const sparks = new THREE.Points(sparkGeo, sparkMat);
   sparks.frustumCulled = false;
   scene.add(sparks);
@@ -768,7 +766,7 @@ export function createPanelScene(canvas: HTMLCanvasElement, opts: PanelSceneOpti
     shadeInner.color.setRGB(0.16 + 1.1 * L, 0.14 + 0.7 * L, 0.12 + 0.34 * L);
     inner.intensity = 1.4 * L;
     coneMat.uniforms.uPower.value = L;
-    dustMat.uniforms.uPower.value = L * (lite ? 0.8 : 1);
+    dustMat.uniforms.uPower.value = L;
     dustMat.uniforms.uT.value = time;
     pulseMat.uniforms.uPower.value = L;
     pulseMat.uniforms.uT.value = time;
@@ -824,20 +822,13 @@ export function createPanelScene(canvas: HTMLCanvasElement, opts: PanelSceneOpti
   let running = false;
   let last = 0;
   let firstFrame = false;
-  let skip = false;
   let slow = 0;
   let frames = 0;
   let tier = 0;
-  const coarse = lite;
 
   const tick = (now: number) => {
     if (!running) return;
     raf = requestAnimationFrame(tick);
-    // Phones run at 30 fps: smooth enough for a slow scene, and the page itself stays at 60
-    if (coarse) {
-      skip = !skip;
-      if (skip) return;
-    }
     const dt = Math.min(0.05, (now - last) / 1000 || 0.016);
     const raw = now - last;
     last = now;
@@ -849,7 +840,7 @@ export function createPanelScene(canvas: HTMLCanvasElement, opts: PanelSceneOpti
     }
     // Slow device: shed resolution, then shadows, rather than ever stutter the page
     frames++;
-    if (raw > (coarse ? 55 : 30)) slow++;
+    if (raw > 30) slow++;
     if (frames >= 80 && !opts.still) {
       if (slow > 44 && tier < 2) {
         tier++;

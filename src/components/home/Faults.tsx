@@ -190,7 +190,7 @@ function Scope({ wave }: { wave: WaveShape }) {
       draw();
     };
 
-    size();
+    // The observer's first report sizes the scope once it is laid out (never a forced layout on load)
     const ro = new ResizeObserver(size);
     ro.observe(cv);
     if (reduced) return () => ro.disconnect();

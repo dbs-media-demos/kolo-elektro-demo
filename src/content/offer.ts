@@ -100,10 +100,13 @@ export const faults: ByLang<Fault[]> = {
   sr: faultsSr.map((f, i) => ({ ...f, from: faultFrom[i], wave: faultWaves[i] })),
 };
 
+/** 412000 → "412.000" (or "412,000"). Whole numbers only; Intl is slow on a phone during hydration. */
+export const group = (n: number, sep: string) => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, sep);
+
 /** The estimator behind the meter. Rate is per unit of floor area, low and high. */
 export const estimator: Record<Market, { unit: string; min: number; max: number; step: number; start: number; rate: Record<"rewire" | "new", [number, number]>; currency: string; format: (n: number) => string }> = {
-  rs: { unit: "m²", min: 30, max: 240, step: 2, start: 68, rate: { rewire: [3200, 4600], new: [2400, 3600] }, currency: "RSD", format: (n) => `${n.toLocaleString("de-DE")} din` },
-  us: { unit: "sq ft", min: 400, max: 3200, step: 50, start: 1200, rate: { rewire: [5, 8], new: [4, 6] }, currency: "USD", format: (n) => `$${n.toLocaleString("en-US")}` },
+  rs: { unit: "m²", min: 30, max: 240, step: 2, start: 68, rate: { rewire: [3200, 4600], new: [2400, 3600] }, currency: "RSD", format: (n) => `${group(n, ".")} din` },
+  us: { unit: "sq ft", min: 400, max: 3200, step: 50, start: 1200, rate: { rewire: [5, 8], new: [4, 6] }, currency: "USD", format: (n) => `$${group(n, ",")}` },
 };
 
 export type PriceRow = { name: string; price: ByMarket };

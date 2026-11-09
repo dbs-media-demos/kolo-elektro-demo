@@ -29,11 +29,16 @@ export function Services() {
   useEffect(() => {
     const el = panel.current;
     if (!el || prefersReducedMotion()) return;
-    if (el.getBoundingClientRect().top < window.innerHeight * 0.8) return;
-    setClosed(0);
     let id = 0;
+    // The observer's first report says where the board starts, without forcing a layout
+    let first = true;
     const io = new IntersectionObserver(
       ([e]) => {
+        if (first) {
+          first = false;
+          if (e.boundingClientRect.top < window.innerHeight * 0.8) return io.disconnect();
+          setClosed(0);
+        }
         if (!e.isIntersecting) return;
         io.disconnect();
         let n = 0;

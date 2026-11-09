@@ -14,11 +14,16 @@ import { ScrollTrigger, prefersReducedMotion } from "@/lib/gsap";
 import { useT } from "@/lib/i18n";
 import type { PanelScene } from "./panelScene";
 
+/** Only a big screen with a mouse ever imports panelScene (and with it three.js). */
+const BIG_SCREEN = "(min-width: 1024px) and (hover: hover) and (pointer: fine)";
+
 /**
  * The centrepiece: a live 3D distribution board (panelScene.ts). The page paints with the headline
- * and a still of the same board; three.js only loads once the page is idle. As the board comes up
- * the lamp strikes on. Scrolling flies the camera into the board and hands over to the plan.
- * Reduced motion, no WebGL or Save-Data keep a still of the lit board.
+ * and a still of the same board; on a big screen with a mouse three.js loads once the page is idle.
+ * As the board comes up the lamp strikes on. Scrolling flies the camera into the board and hands
+ * over to the plan. Phones and tablets keep stills rendered from the same desktop scene: the lit one
+ * crossfades in once (the power-up), and the main switch flips between the two. Reduced motion,
+ * no WebGL or Save-Data keep a still of the lit board.
  */
 export function Hero() {
   const biz = useBiz();
@@ -28,30 +33,48 @@ export function Hero() {
   const copy = useRef<HTMLDivElement>(null);
   const fade = useRef<HTMLDivElement>(null);
   const scene = useRef<PanelScene | null>(null);
-  const [mode, setMode] = useState<"dim" | "live" | "lit">("dim");
+  const [mode, setMode] = useState<"dim" | "live" | "still">("dim");
   const [power, setPower] = useState<boolean | null>(null);
+  const [litReady, setLitReady] = useState(false);
 
   useEffect(() => {
     const cv = canvas.current;
     const sec = section.current;
     if (!cv || !sec) return;
     const conn = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
-    const webgl = (() => {
-      try {
-        return Boolean(document.createElement("canvas").getContext("webgl2"));
-      } catch {
-        return false;
+    const big = window.matchMedia(BIG_SCREEN).matches;
+    // Probing for WebGL costs a phone over 100 ms, so only big screens ask
+    const webgl =
+      big &&
+      (() => {
+        try {
+          return Boolean(document.createElement("canvas").getContext("webgl2"));
+        } catch {
+          return false;
+        }
+      })();
+    // scripts/capture-stills.mjs renders the fallback stills from the scene itself, on a big screen
+    const still = big ? (new URLSearchParams(window.location.search).get("still") as "on" | "off" | null) : null;
+    if (!big || (!still && (prefersReducedMotion() || conn?.saveData || !webgl))) {
+      // No scene: the lit still with a main switch. Phones see the dark board first, then the power-up.
+      const on = () => {
+        setMode("still");
+        setPower(true);
+      };
+      if (big || prefersReducedMotion()) {
+        on();
+        return;
       }
-    })();
-    // scripts/capture-stills.mjs renders the fallback stills from the scene itself
-    const still = new URLSearchParams(window.location.search).get("still") as "on" | "off" | null;
-    if (!still && (prefersReducedMotion() || conn?.saveData || !webgl)) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- capabilities are client-only
-      setMode("lit");
-      return;
+      let id = 0;
+      const later = () => (id = window.setTimeout(on, 700));
+      if (document.readyState === "complete") later();
+      else window.addEventListener("load", later, { once: true });
+      return () => {
+        window.removeEventListener("load", later);
+        window.clearTimeout(id);
+      };
     }
 
-    const lite = window.matchMedia("(hover: none), (pointer: coarse), (max-width: 760px)").matches;
     let alive = true;
     let cleanup = () => {};
 
@@ -59,7 +82,6 @@ export function Hero() {
       const { createPanelScene } = await import("./panelScene");
       if (!alive) return;
       const s = createPanelScene(cv, {
-        lite,
         still: still ?? undefined,
         onFirstFrame: () => {
           cv.dataset.ready = "true";
@@ -147,18 +169,27 @@ export function Hero() {
   const { props: { srcSet: dimT, ...img } } = getImageProps({ ...common, src: dimTall, loading: "eager" });
   const { props: { srcSet: litW } } = getImageProps({ ...common, src: litWide });
   const { props: { srcSet: litT, ...imgLit } } = getImageProps({ ...common, src: litTall });
-  const lit = mode === "lit";
+  const lit = mode === "still" && power === true;
 
   return (
-    <section ref={section} id="top" aria-labelledby="hero-title" className="sec-night relative h-[155svh] motion-reduce:h-[100svh] md:h-[170svh]">
+    <section ref={section} id="top" aria-labelledby="hero-title" className="hero sec-night relative">
       <div data-stage className="sticky top-0 isolate h-[100svh] overflow-hidden">
         <div className="hero-still" aria-hidden={mode === "live"}>
           <picture>
-            <source media="(min-width: 900px)" srcSet={lit ? litW : dimW} sizes="100vw" />
-            <source media="(max-width: 899px)" srcSet={lit ? litT : dimT} sizes="100vw" />
+            <source media="(min-width: 900px)" srcSet={dimW} sizes="100vw" />
+            <source media="(max-width: 899px)" srcSet={dimT} sizes="100vw" />
             {/* eslint-disable-next-line jsx-a11y/alt-text -- alt comes from getImageProps */}
-            <img {...(lit ? imgLit : img)} fetchPriority="high" />
+            <img {...img} fetchPriority="high" />
           </picture>
+          {/* The lit board is only requested once it's wanted, then crossfades over the dark one */}
+          {mode === "still" && (
+            <picture className="hero-lit" data-on={lit && litReady}>
+              <source media="(min-width: 900px)" srcSet={litW} sizes="100vw" />
+              <source media="(max-width: 899px)" srcSet={litT} sizes="100vw" />
+              {/* The dark still below carries the alt text */}
+              <img {...imgLit} alt="" onLoad={() => setLitReady(true)} />
+            </picture>
+          )}
         </div>
         <canvas ref={canvas} className="hero-canvas" aria-hidden />
         <div className="hero-scrim" aria-hidden />
@@ -213,16 +244,16 @@ export function Hero() {
                   </span>
                 </p>
               )}
-              <OpenBadge className="quiet" />
+              <OpenBadge className="quiet" always={t("Emergency callouts 24/7")} />
             </div>
           </div>
         </div>
 
         {/* The real main switch of the 3D board, for anyone not hunting for it with a mouse */}
-        {mode === "live" && power !== null && (
+        {mode !== "dim" && power !== null && (
           <button
             type="button"
-            onClick={() => scene.current?.toggle()}
+            onClick={() => (mode === "live" ? scene.current?.toggle() : setPower(!power))}
             aria-pressed={power}
             aria-label={power ? t("Main switch: on") : t("Main switch: off")}
             className="anim-fade absolute right-[var(--gutter)] top-[calc(var(--header-h)+0.5rem)] flex h-11 min-w-11 items-center justify-center gap-2.5 rounded-full border border-white/15 bg-night/50 text-xs text-bone backdrop-blur-md transition-colors hover:border-white/40 min-[900px]:bottom-8 min-[900px]:top-auto min-[900px]:justify-start min-[900px]:py-1 min-[900px]:pl-1.5 min-[900px]:pr-3.5"

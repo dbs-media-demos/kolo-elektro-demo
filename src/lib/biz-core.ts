@@ -77,8 +77,13 @@ export const weekFromMonday = (hours: DayHours[]) => (hours.length ? [...hours.s
 
 const toMin = (t: string) => Number(t.slice(0, 2)) * 60 + Number(t.slice(3, 5));
 
+// Building a formatter is the slow part, so each timezone gets one
+const clocks = new Map<string, Intl.DateTimeFormat>();
+
 function nowIn(timeZone: string, date = new Date()) {
-  const parts = new Intl.DateTimeFormat("en-US", { timeZone, weekday: "short", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).formatToParts(date);
+  let clock = clocks.get(timeZone);
+  if (!clock) clocks.set(timeZone, (clock = new Intl.DateTimeFormat("en-US", { timeZone, weekday: "short", hour: "2-digit", minute: "2-digit", hourCycle: "h23" })));
+  const parts = clock.formatToParts(date);
   const get = (t: string) => parts.find((p) => p.type === t)?.value ?? "0";
   return { day: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].indexOf(get("weekday")), minutes: Number(get("hour")) * 60 + Number(get("minute")) };
 }

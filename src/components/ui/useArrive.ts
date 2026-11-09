@@ -13,10 +13,15 @@ export function useArrive(ref: RefObject<HTMLElement | null>, waiting: string, a
   useEffect(() => {
     const el = ref.current;
     if (!el || prefersReducedMotion()) return;
-    if (el.getBoundingClientRect().top < window.innerHeight * 0.85) return;
-    el.classList.add(waiting);
+    // The observer's first report says where the block starts, without forcing a layout per block
+    let first = true;
     const io = new IntersectionObserver(
       ([e]) => {
+        if (first) {
+          first = false;
+          if (e.boundingClientRect.top < window.innerHeight * 0.85) return io.disconnect();
+          el.classList.add(waiting);
+        }
         if (!e.isIntersecting) return;
         el.classList.remove(waiting);
         if (arrived) el.classList.add(arrived);

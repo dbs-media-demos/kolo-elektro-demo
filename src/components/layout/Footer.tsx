@@ -101,10 +101,11 @@ function Wordmark({ name }: { name: string }) {
       const parent = el.parentElement!.clientWidth;
       el.style.fontSize = `${Math.min((parseFloat(getComputedStyle(el).fontSize) * parent) / el.scrollWidth, window.innerWidth * 0.42)}px`;
     };
-    fit();
+    // Fits on the observer's first report, after layout, and again whenever the width changes
+    const ro = new ResizeObserver(fit);
+    ro.observe(el.parentElement!);
     document.fonts?.ready.then(fit);
-    window.addEventListener("resize", fit);
-    if (prefersReducedMotion()) return () => window.removeEventListener("resize", fit);
+    if (prefersReducedMotion()) return () => ro.disconnect();
 
     const hover = window.matchMedia("(hover: hover)").matches;
     let raf = 0;
@@ -129,12 +130,12 @@ function Wordmark({ name }: { name: string }) {
       return () => {
         io.disconnect();
         cancelAnimationFrame(raf);
-        window.removeEventListener("resize", fit);
+        ro.disconnect();
       };
     }
     return () => {
       el.parentElement?.removeEventListener("pointermove", onMove);
-      window.removeEventListener("resize", fit);
+      ro.disconnect();
     };
   }, []);
 

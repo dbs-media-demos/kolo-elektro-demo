@@ -3,7 +3,7 @@
 import { useMemo, useState, type CSSProperties } from "react";
 import { useBiz } from "@/components/preview/BizContext";
 import { Reveal } from "@/components/ui/Reveal";
-import { estimator, priceList } from "@/content/offer";
+import { estimator, group, priceList } from "@/content/offer";
 import { marketOf } from "@/lib/biz";
 import { useT } from "@/lib/i18n";
 
@@ -97,7 +97,7 @@ export function Prices() {
             <label htmlFor="area" className="mt-7 flex items-baseline justify-between text-sm">
               <span className="text-ash">{t("Floor area")}</span>
               <span className="font-mono text-lg tabular-nums">
-                {area.toLocaleString(biz.lang === "sr" ? "de-DE" : "en-US")} {cfg.unit}
+                {group(area, biz.lang === "sr" ? "." : ",")} {cfg.unit}
               </span>
             </label>
             <input
