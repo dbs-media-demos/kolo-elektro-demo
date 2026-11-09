@@ -16,14 +16,51 @@ import type { PanelScene } from "./panelScene";
 
 /** Only a big screen with a mouse ever imports panelScene (and with it three.js). */
 const BIG_SCREEN = "(min-width: 1024px) and (hover: hover) and (pointer: fine)";
+/** Set when the board ran too slowly: the rest of the visit keeps the stills. */
+const SLOW_KEY = "kolo-3d";
+
+const remembered = () => {
+  try {
+    return sessionStorage.getItem(SLOW_KEY) === "still";
+  } catch {
+    return false;
+  }
+};
+
+/**
+ * The canvas's own WebGL 2 context, only on a real graphics chip: no major performance caveat and
+ * not a software renderer. Made once and handed to three.js (the first context costs ~130 ms however
+ * fast the machine is). Stills for scripts/capture-stills.mjs are drawn on any renderer.
+ */
+const gpuContext = (cv: HTMLCanvasElement, still: boolean) => {
+  try {
+    const gl = cv.getContext("webgl2", {
+      alpha: false,
+      antialias: true,
+      depth: true,
+      stencil: false,
+      powerPreference: "high-performance",
+      failIfMajorPerformanceCaveat: !still,
+      preserveDrawingBuffer: still,
+    });
+    if (!gl || still) return gl;
+    const info = gl.getExtension("WEBGL_debug_renderer_info");
+    const name = info ? String(gl.getParameter(info.UNMASKED_RENDERER_WEBGL)) : "";
+    if (!/swiftshader|llvmpipe|softpipe|software|basic render/i.test(name)) return gl;
+    gl.getExtension("WEBGL_lose_context")?.loseContext();
+  } catch {}
+  return null;
+};
 
 /**
  * The centrepiece: a live 3D distribution board (panelScene.ts). The page paints with the headline
- * and a still of the same board; on a big screen with a mouse three.js loads once the page is idle.
- * As the board comes up the lamp strikes on. Scrolling flies the camera into the board and hands
- * over to the plan. Phones and tablets keep stills rendered from the same desktop scene: the lit one
- * crossfades in once (the power-up), and the main switch flips between the two. Reduced motion,
- * no WebGL or Save-Data keep a still of the lit board.
+ * and a still of the same board; on a big screen with a mouse three.js loads once the page is idle,
+ * builds in small steps and compiles its shaders while the still is on screen, and only then fades
+ * in. As the board comes up the lamp strikes on. Scrolling flies the camera into the board and hands
+ * over to the plan. If its first two seconds run slowly, the canvas fades back to the still and the
+ * rest of the visit stays on stills. Phones and tablets keep stills rendered from the same desktop
+ * scene: the lit one crossfades in once (the power-up), and the main switch flips between the two.
+ * Reduced motion, no real graphics chip or Save-Data keep a still of the lit board.
  */
 export function Hero() {
   const biz = useBiz();
@@ -33,9 +70,12 @@ export function Hero() {
   const copy = useRef<HTMLDivElement>(null);
   const fade = useRef<HTMLDivElement>(null);
   const scene = useRef<PanelScene | null>(null);
+  const release = useRef<() => void>(() => {});
   const [mode, setMode] = useState<"dim" | "live" | "still">("dim");
   const [power, setPower] = useState<boolean | null>(null);
   const [litReady, setLitReady] = useState(false);
+  /** The live board is handing over to the still underneath it. */
+  const [leaving, setLeaving] = useState(false);
 
   useEffect(() => {
     const cv = canvas.current;
@@ -43,19 +83,33 @@ export function Hero() {
     if (!cv || !sec) return;
     const conn = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
     const big = window.matchMedia(BIG_SCREEN).matches;
-    // Probing for WebGL costs a phone over 100 ms, so only big screens ask
-    const webgl =
-      big &&
-      (() => {
-        try {
-          return Boolean(document.createElement("canvas").getContext("webgl2"));
-        } catch {
-          return false;
-        }
-      })();
     // scripts/capture-stills.mjs renders the fallback stills from the scene itself, on a big screen
     const still = big ? (new URLSearchParams(window.location.search).get("still") as "on" | "off" | null) : null;
-    if (!big || (!still && (prefersReducedMotion() || conn?.saveData || !webgl))) {
+
+    // Where the hero is a tall scroll flight (big screen, motion allowed), the copy leaves with the scroll
+    let onScroll = (p: number) => void p;
+    const st =
+      big && !prefersReducedMotion()
+        ? ScrollTrigger.create({
+            trigger: sec,
+            start: "top top",
+            end: "bottom bottom",
+            onUpdate: (self) => {
+              const p = self.progress;
+              if (copy.current) {
+                const a = Math.max(0, 1 - p / 0.42);
+                copy.current.style.opacity = String(a);
+                copy.current.style.transform = `translateY(${-p * 70}px)`;
+                copy.current.style.pointerEvents = a < 0.2 ? "none" : "";
+              }
+              if (fade.current) fade.current.style.opacity = String(Math.max(0, (p - 0.72) / 0.28));
+              onScroll(p);
+            },
+          })
+        : null;
+
+    // The graphics chip is only asked about on a big screen that may run the board, once the page is idle
+    if (!big || (!still && (prefersReducedMotion() || conn?.saveData || remembered()))) {
       // No scene: the lit still with a main switch. Phones see the dark board first, then the power-up.
       const on = () => {
         setMode("still");
@@ -63,7 +117,7 @@ export function Hero() {
       };
       if (big || prefersReducedMotion()) {
         on();
-        return;
+        return () => st?.kill();
       }
       let id = 0;
       const later = () => (id = window.setTimeout(on, 700));
@@ -76,45 +130,87 @@ export function Hero() {
     }
 
     let alive = true;
-    let cleanup = () => {};
+    let onScreen = false;
+    let covered = false;
+    let gaveUp = false;
+    let detach = () => {};
+
+    // Draws only while some of the board can be seen: on screen, tab visible, not under the fade
+    const gate = () => {
+      const s = scene.current;
+      if (!s) return;
+      if (onScreen && !covered && !gaveUp && !document.hidden) s.start();
+      else s.stop();
+    };
+    onScroll = (p) => {
+      scene.current?.setScroll(p);
+      const under = p >= 0.999;
+      if (under !== covered) {
+        covered = under;
+        gate();
+      }
+    };
+    document.addEventListener("visibilitychange", gate);
+
+    // Too slow here: remember it for the visit, stop drawing, and let the still take over again
+    const giveUp = () => {
+      if (gaveUp || !alive) return;
+      gaveUp = true;
+      try {
+        sessionStorage.setItem(SLOW_KEY, "still");
+      } catch {}
+      gate();
+      detach();
+      setPower((p) => p ?? true);
+      setMode("still");
+      // A board that was on screen hands over under cover; one that never showed has nothing to fade
+      if (cv.dataset.ready === "true") setLeaving(true);
+      else {
+        release.current();
+        release.current = () => {};
+      }
+    };
 
     const boot = async () => {
-      const { createPanelScene } = await import("./panelScene");
-      if (!alive) return;
-      const s = createPanelScene(cv, {
-        still: still ?? undefined,
-        onFirstFrame: () => {
-          cv.dataset.ready = "true";
-          setMode("live");
-        },
-        onPower: setPower,
-      });
+      // No real graphics chip: the still stays, and three.js is never downloaded
+      const gl = gpuContext(cv, Boolean(still));
+      if (!gl) return giveUp();
+      let s: PanelScene;
+      try {
+        const { createPanelScene } = await import("./panelScene");
+        if (!alive) return;
+        s = await createPanelScene(cv, {
+          context: gl,
+          still: still ?? undefined,
+          onFirstFrame: () => {
+            cv.dataset.ready = "true";
+            setMode("live");
+          },
+          onPower: setPower,
+          onSlow: giveUp,
+        });
+      } catch {
+        // No WebGL context after all, or it failed to build: the still stays
+        if (!still) giveUp();
+        return;
+      }
+      if (!alive) return s.dispose();
       scene.current = s;
+      release.current = () => {
+        s.dispose();
+        if (scene.current === s) scene.current = null;
+      };
 
-      const sizeIt = () => s.resize(sec.querySelector<HTMLElement>("[data-stage]")!.clientWidth, sec.querySelector<HTMLElement>("[data-stage]")!.clientHeight);
+      const stage = sec.querySelector<HTMLElement>("[data-stage]")!;
+      const sizeIt = () => s.resize(stage.clientWidth, stage.clientHeight);
       sizeIt();
       const ro = new ResizeObserver(sizeIt);
-      ro.observe(sec.querySelector("[data-stage]")!);
+      ro.observe(stage);
 
       // Off-screen, the scene doesn't draw at all
-      const io = new IntersectionObserver(([e]) => (e.isIntersecting ? s.start() : s.stop()));
-      io.observe(sec);
-
-      const st = ScrollTrigger.create({
-        trigger: sec,
-        start: "top top",
-        end: "bottom bottom",
-        onUpdate: (self) => {
-          const p = self.progress;
-          s.setScroll(p);
-          if (copy.current) {
-            const a = Math.max(0, 1 - p / 0.42);
-            copy.current.style.opacity = String(a);
-            copy.current.style.transform = `translateY(${-p * 70}px)`;
-            copy.current.style.pointerEvents = a < 0.2 ? "none" : "";
-          }
-          if (fade.current) fade.current.style.opacity = String(Math.max(0, (p - 0.72) / 0.28));
-        },
+      const io = new IntersectionObserver(([e]) => {
+        onScreen = e.isIntersecting;
+        gate();
       });
 
       const toNdc = (e: PointerEvent) => {
@@ -135,18 +231,21 @@ export function Hero() {
       sec.addEventListener("pointermove", onMove, { passive: true });
       sec.addEventListener("click", onClick);
 
-      cleanup = () => {
+      detach = () => {
         ro.disconnect();
         io.disconnect();
-        st.kill();
         sec.removeEventListener("pointermove", onMove);
         sec.removeEventListener("click", onClick);
-        s.dispose();
-        scene.current = null;
+        sec.style.cursor = "";
       };
+
+      // Every shader compiled and one frame drawn while the still is on screen; only then may it show
+      await s.warm();
+      if (!alive || gaveUp) return;
+      io.observe(sec);
     };
 
-    // After the page: first paint and hydration never wait for three.js
+    // After the page, when the browser is idle: first paint and hydration never wait for three.js
     let idle = 0;
     const later = () => {
       const ric = window.requestIdleCallback ?? ((fn: () => void) => window.setTimeout(fn, 300));
@@ -158,10 +257,30 @@ export function Hero() {
     return () => {
       alive = false;
       window.removeEventListener("load", later);
+      document.removeEventListener("visibilitychange", gate);
       if (idle) window.cancelIdleCallback?.(idle);
-      cleanup();
+      st?.kill();
+      detach();
+      release.current();
+      release.current = () => {};
     };
   }, []);
+
+  // Handing back: once the still under the canvas is in place, the canvas fades out and the renderer is freed
+  useEffect(() => {
+    if (!leaving || (power && !litReady)) return;
+    const cv = canvas.current;
+    if (cv) {
+      delete cv.dataset.ready;
+      cv.dataset.fallback = "true";
+    }
+    const id = window.setTimeout(() => {
+      release.current();
+      release.current = () => {};
+      setLeaving(false);
+    }, 1200);
+    return () => window.clearTimeout(id);
+  }, [leaving, power, litReady]);
 
   const alt = t("A distribution board with neat rows of breakers on a dark wall, under one warm pendant lamp");
   const common = { alt, sizes: "100vw", quality: 75 };
@@ -183,7 +302,7 @@ export function Hero() {
           </picture>
           {/* The lit board is only requested once it's wanted, then crossfades over the dark one */}
           {mode === "still" && (
-            <picture className="hero-lit" data-on={lit && litReady}>
+            <picture className="hero-lit" data-on={lit && litReady} data-instant={leaving}>
               <source media="(min-width: 900px)" srcSet={litW} sizes="100vw" />
               <source media="(max-width: 899px)" srcSet={litT} sizes="100vw" />
               {/* The dark still below carries the alt text */}

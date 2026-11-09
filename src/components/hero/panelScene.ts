@@ -11,16 +11,27 @@ import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js
  *
  * Desktop only: phones and tablets get stills rendered from this scene (scripts/capture-stills.mjs)
  * and never download three.js.
+ *
+ * Built so it never stutters: the build yields to the page between steps, warm() compiles every
+ * shader asynchronously and draws one frame while the canvas is still hidden, and the first two
+ * seconds on screen are timed. Under ~45 fps, one frame over 100 ms, or more than 2 ms of main-thread
+ * work a frame (a weak CPU behind a good graphics card), it stops and calls onSlow.
  */
 
 export type PanelSceneOptions = {
+  /** The canvas's WebGL 2 context, already checked for a real graphics chip. */
+  context?: WebGL2RenderingContext;
   onFirstFrame?: () => void;
   onPower?: (on: boolean) => void;
   /** Draw fixed "after power-up" or "before power-up" frames (fallback stills), no autoplay. */
   still?: "on" | "off";
+  /** The first 2 s on screen ran too slowly for this machine: the loop has stopped for good. */
+  onSlow?: () => void;
 };
 
 export type PanelScene = {
+  /** Compile every shader (without blocking) and draw one frame while the canvas is still hidden. */
+  warm(): Promise<void>;
   start(): void;
   stop(): void;
   setScroll(p: number): void;
@@ -36,6 +47,14 @@ const ROW_Y = [0.86, 0, -0.86];
 const W = 3.4;
 const H = 3.1;
 const D = 0.55;
+
+/** Hand the main thread back to the page between build steps, so scrolling never waits for the board. */
+const pause = () =>
+  new Promise<void>((done) => {
+    const s = (globalThis as { scheduler?: { yield?: () => Promise<void> } }).scheduler;
+    if (s?.yield) void s.yield().then(done);
+    else setTimeout(done, 0);
+  });
 
 const smooth = (a: number, b: number, x: number) => {
   const t = Math.min(1, Math.max(0, (x - a) / (b - a)));
@@ -145,15 +164,26 @@ function glowTexture() {
   });
 }
 
-export function createPanelScene(canvas: HTMLCanvasElement, opts: PanelSceneOptions): PanelScene {
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: "high-performance", preserveDrawingBuffer: Boolean(opts.still) });
+export async function createPanelScene(canvas: HTMLCanvasElement, opts: PanelSceneOptions): Promise<PanelScene> {
+  await pause();
+  // Without a context handed in, no real graphics chip (software rendering) throws here
+  const renderer = new THREE.WebGLRenderer({
+    canvas,
+    context: opts.context,
+    antialias: true,
+    alpha: false,
+    powerPreference: "high-performance",
+    failIfMajorPerformanceCaveat: !opts.still,
+    preserveDrawingBuffer: Boolean(opts.still),
+  });
   renderer.setClearColor(0x070807);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.05;
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-  let pixelRatio = Math.min(window.devicePixelRatio || 1, 1.75);
+  const pixelRatio = Math.min(window.devicePixelRatio || 1, 1.5);
   renderer.setPixelRatio(pixelRatio);
+  await pause();
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 80);
@@ -178,11 +208,46 @@ export function createPanelScene(canvas: HTMLCanvasElement, opts: PanelSceneOpti
     panel(new THREE.Color(9, 6.5, 3.6), 5, 4, [0, 6, 4]);
     panel(new THREE.Color(1.8, 2, 2.3), 4, 7, [-7, 0, 3]);
     panel(new THREE.Color(1.1, 0.8, 0.5), 8, 2, [4, -5, 5]);
+
+    // PMREM compiles its shaders (the panels, the background, the blur) the moment it first draws,
+    // which blocks the page. Compile them first without blocking, against a render target as PMREM
+    // draws. The blur shader is only reachable through PMREM's internals (three r170); if those
+    // change, it is simply compiled the old way inside fromScene.
+    const pre = new THREE.Scene();
+    const standIns: { dispose(): void }[] = [];
+    env.children.forEach((m) => pre.add(new THREE.Mesh((m as THREE.Mesh).geometry, (m as THREE.Mesh).material)));
+    const bgGeo = new THREE.BoxGeometry();
+    const bgMat = new THREE.MeshBasicMaterial({ side: THREE.BackSide });
+    pre.add(new THREE.Mesh(bgGeo, bgMat));
+    standIns.push(bgGeo, bgMat);
+    const inner = pmrem as unknown as { _setSize?: (n: number) => void; _allocateTargets?: () => THREE.WebGLRenderTarget; _blurMaterial?: THREE.Material | null };
+    if (inner._setSize && inner._allocateTargets) {
+      inner._setSize(256);
+      inner._allocateTargets().dispose();
+      if (inner._blurMaterial) {
+        const g = new THREE.PlaneGeometry();
+        pre.add(new THREE.Mesh(g, inner._blurMaterial));
+        standIns.push(g);
+      }
+    }
+    const target = new THREE.WebGLRenderTarget(1, 1);
+    renderer.setRenderTarget(target);
+    const compiled = renderer.compileAsync(pre, camera);
+    renderer.setRenderTarget(null);
+    await compiled;
+    await pause();
+
     const rt = pmrem.fromScene(env, 0.05);
     scene.environment = keep(rt).texture;
     scene.environmentIntensity = 0.3;
+    [target, ...standIns].forEach((d) => d.dispose());
+    env.children.forEach((m) => {
+      (m as THREE.Mesh).geometry.dispose();
+      ((m as THREE.Mesh).material as THREE.Material).dispose();
+    });
   }
   pmrem.dispose();
+  await pause();
 
   // ── Materials ──
   const mat = {
@@ -206,6 +271,8 @@ export function createPanelScene(canvas: HTMLCanvasElement, opts: PanelSceneOpti
     lamp: keep(new THREE.MeshStandardMaterial({ color: 0x191a17, roughness: 0.42, metalness: 0.65, side: THREE.DoubleSide })),
     bulb: keep(new THREE.MeshBasicMaterial({ color: 0x4a4436, toneMapped: false })),
   };
+
+  await pause();
 
   // ── The wall ──
   const wall = new THREE.Mesh(keep(new THREE.PlaneGeometry(44, 30)), mat.wall);
@@ -244,6 +311,8 @@ export function createPanelScene(canvas: HTMLCanvasElement, opts: PanelSceneOpti
   sheet.rotation.set(0, Math.PI, 0.01);
   sheet.receiveShadow = true;
   door.add(sheet);
+
+  await pause();
 
   // ── What goes on the rails ──
   type Unit = { x: number; row: number; w: number; kind: "main" | "rcd" | "mcb" };
@@ -375,6 +444,8 @@ export function createPanelScene(canvas: HTMLCanvasElement, opts: PanelSceneOpti
   addBar(-1.56, -0.42);
   addBar(1.56, -0.42);
 
+  await pause();
+
   // ── Wires ──
   const wires: Record<"brown" | "black" | "grey" | "blue" | "earth", THREE.BufferGeometry[]> = { brown: [], black: [], grey: [], blue: [], earth: [] };
   const pulseGeos: THREE.BufferGeometry[] = [];
@@ -430,6 +501,7 @@ export function createPanelScene(canvas: HTMLCanvasElement, opts: PanelSceneOpti
       ], 0.0125, { seg: 30 });
     }
   }
+  await pause();
   // The heavy feed: comes through the top and lands in the main switch
   const feedColors: (keyof typeof wires)[] = ["brown", "black", "grey"];
   feedColors.forEach((c, i) => {
@@ -491,6 +563,8 @@ export function createPanelScene(canvas: HTMLCanvasElement, opts: PanelSceneOpti
     board.add(new THREE.Mesh(g, pulseMat));
     pulseGeos.forEach((p) => p.dispose());
   }
+
+  await pause();
 
   // ── The pendant ──
   const pivot = new THREE.Group();
@@ -561,6 +635,8 @@ export function createPanelScene(canvas: HTMLCanvasElement, opts: PanelSceneOpti
   const inner = new THREE.PointLight(0xffb45c, 0, 5, 1.8);
   inner.position.set(0, 1.0, 0.95);
   board.add(inner);
+
+  await pause();
 
   // ── Dust in the beam ──
   const dustCount = 140;
@@ -822,9 +898,12 @@ export function createPanelScene(canvas: HTMLCanvasElement, opts: PanelSceneOpti
   let running = false;
   let last = 0;
   let firstFrame = false;
-  let slow = 0;
-  let frames = 0;
-  let tier = 0;
+  let fresh = true; // the first frame after a start() carries the pause, not the machine's speed
+  // The first 2 s on screen decide whether this machine keeps the live board (not when drawing stills)
+  let watching = Boolean(opts.onSlow && !opts.still);
+  let watchMs = 0;
+  let watchFrames = 0;
+  let watchCost = 0;
 
   const tick = (now: number) => {
     if (!running) return;
@@ -832,39 +911,75 @@ export function createPanelScene(canvas: HTMLCanvasElement, opts: PanelSceneOpti
     const dt = Math.min(0.05, (now - last) / 1000 || 0.016);
     const raw = now - last;
     last = now;
+    const t0 = performance.now();
     update(dt);
     renderer.render(scene, camera);
+    const cost = performance.now() - t0; // main-thread time; the GPU's share runs on its own
     if (!firstFrame) {
       firstFrame = true;
       opts.onFirstFrame?.();
+      // The canvas fades in on the same dark board as the still; a beat later the main closes
+      if (!opts.still) bootTimer = window.setTimeout(() => setPower(true), 900);
     }
-    // Slow device: shed resolution, then shadows, rather than ever stutter the page
-    frames++;
-    if (raw > 30) slow++;
-    if (frames >= 80 && !opts.still) {
-      if (slow > 44 && tier < 2) {
-        tier++;
-        if (tier === 1) {
-          pixelRatio = Math.max(1, pixelRatio * 0.75);
-          renderer.setPixelRatio(pixelRatio);
-          renderer.setSize(width, height, false);
-        } else {
-          spot.castShadow = false;
-          scene.traverse((o) => {
-            const m = (o as THREE.Mesh).material as THREE.Material | undefined;
-            if (m) m.needsUpdate = true;
-          });
-        }
-      }
-      frames = 0;
-      slow = 0;
+    if (fresh) {
+      fresh = false;
+      return;
     }
+    if (!watching) return;
+    watchMs += raw;
+    watchFrames++;
+    watchCost += cost;
+    const done = watchMs >= 2000;
+    // Slow: under ~45 fps, one frame over 100 ms, or the board's own work over 2 ms a frame. A fast
+    // graphics card can hold a high frame rate on a weak CPU, but then every scroll fights the board
+    // for the main thread (0.4-0.7 ms here, 2.7-5.4 ms with Chrome's 4x CPU slowdown).
+    if (raw > 100 || (done && ((watchFrames * 1000) / watchMs < 45 || watchCost / watchFrames > 2))) {
+      watching = false;
+      api.stop();
+      opts.onSlow?.();
+    } else if (done) watching = false;
   };
 
   const api: PanelScene = {
+    async warm() {
+      // Shader sources are built one material at a time, giving the page the main thread in between;
+      // the GPU compiles them in parallel and compileAsync then waits for them without blocking
+      const seen = new Set<string>();
+      const parts: THREE.Object3D[] = [];
+      scene.traverse((o) => {
+        const m = (o as THREE.Mesh).material as THREE.Material | undefined;
+        if (!m || o.children.length) return;
+        const key = m.uuid + ((o as THREE.InstancedMesh).isInstancedMesh ? ":i" : "");
+        if (seen.has(key)) return;
+        seen.add(key);
+        parts.push(o);
+      });
+      for (const o of parts) {
+        renderer.compile(o, camera, scene);
+        await pause();
+      }
+      await renderer.compileAsync(scene, camera);
+      // The lamp's shadow pass draws with its own depth shaders. Compile those the same way, against a
+      // render target like the shadow map, so the hidden frame below finds them ready too
+      const rt = new THREE.WebGLRenderTarget(1, 1);
+      const depthBox = new THREE.BoxGeometry();
+      const depthMats = [0, 1].map(() => new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking, side: THREE.BackSide }));
+      const depthScene = new THREE.Scene().add(new THREE.Mesh(depthBox, depthMats[0]), new THREE.InstancedMesh(depthBox, depthMats[1], 1));
+      renderer.setRenderTarget(rt);
+      const depthReady = renderer.compileAsync(depthScene, spot.shadow.camera, scene);
+      renderer.setRenderTarget(null);
+      await depthReady;
+      await pause();
+      // One frame while the canvas is still invisible: texture and buffer uploads and the first shadow pass
+      update(0);
+      renderer.render(scene, camera);
+      // Only now: the shadow pass holds those programs, so freeing the stand-ins keeps them
+      [rt, depthBox, ...depthMats].forEach((d) => d.dispose());
+    },
     start() {
       if (running) return;
       running = true;
+      fresh = true;
       last = performance.now();
       raf = requestAnimationFrame(tick);
     },
@@ -898,6 +1013,8 @@ export function createPanelScene(canvas: HTMLCanvasElement, opts: PanelSceneOpti
       disposables.forEach((d) => d.dispose());
       scene.clear();
       renderer.dispose();
+      // Hand the GPU memory back now, not whenever the garbage collector gets to it
+      renderer.forceContextLoss();
     },
   };
 
@@ -908,9 +1025,7 @@ export function createPanelScene(canvas: HTMLCanvasElement, opts: PanelSceneOpti
     pointer.tx = pointer.x = 0.4;
     pointer.ty = pointer.y = 0.12;
   } else {
-    // First paint of the canvas is the same dark board as the still; a beat later the main closes
     lampOnAt = Infinity;
-    bootTimer = window.setTimeout(() => setPower(true), 900);
   }
 
   return api;

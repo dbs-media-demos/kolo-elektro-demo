@@ -25,7 +25,8 @@
 ## Notes
 - Fictional business: Strujna 12, 21000 Novi Sad, +381 21 000 0000, zdravo@koloelektro.com. A web search found no electrician called Kolo in Novi Sad.
 - Reviews are samples and labelled as such.
-- Checked in headless Chromium with software WebGL, so real-device frame rates have not been measured.
+- Desktop 3D start: three.js loads when the browser is idle after load, on the canvas's own WebGL 2 context (no real graphics chip keeps the still and never downloads three.js). The scene builds in small steps, compiles every shader asynchronously (the shadow and environment-map shaders too) and draws one hidden frame before the canvas fades in over the still. Its first 2 s on screen are timed: under ~45 fps, a frame over 100 ms or over 2 ms of main-thread work a frame fades back to the still for the rest of the visit (sessionStorage `kolo-3d`). It draws only while visible (on screen, tab shown, not under the end fade), pixel ratio capped at 1.5.
+- Measured 2026-11-09 on the production build, headless Chrome on the RTX 5070: the board fades in ~0.93 s after navigation with no long task after load and no frame over 13 ms in its first 2 s. With 4x CPU slowdown it fades in at ~3.4 s, hands back to the lit still ~2 s later and a reload in the same visit downloads no three.js.
 - Phones and tablets never load three.js: only a big screen with a mouse (`(min-width: 1024px) and (hover: hover) and (pointer: fine)`, no reduced motion, no Save-Data) imports panelScene. Phones get dark and lit stills rendered from the desktop scene (`node scripts/capture-stills.mjs`), crossfade once to lit, and the main switch flips them.
 - On phones the sections from Usluge to Pitanja skip layout until near the screen, holding their measured height from `src/app/held.css`. After changing section content: build, `node scripts/held-heights.mjs`, build again.
 

@@ -350,6 +350,10 @@ body {
   .hero-lit[data-on="true"] {
     opacity: 1;
   }
+  /* While the live board hands back, the still under it is already in place */
+  .hero-lit[data-instant="true"] {
+    transition: none;
+  }
   .hero-canvas {
     position: absolute;
     inset: 0;
