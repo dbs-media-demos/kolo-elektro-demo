@@ -21,7 +21,9 @@ export function SiteChrome({ children }: { children: ReactNode }) {
         {t("Skip to content")}
       </a>
       <Header />
-      <main id="main">{children}</main>
+      <main id="main" data-lang={biz.lang} data-preview={biz.preview || undefined}>
+        {children}
+      </main>
       <Footer />
       <MobileBar />
       <DemoPill />

@@ -4,12 +4,14 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
 import clsx from "clsx";
 import { useBiz } from "@/components/preview/BizContext";
 import { steps } from "@/content/offer";
-import { ScrollTrigger, prefersReducedMotion } from "@/lib/gsap";
+import { loadGsap, scrollScenes } from "@/lib/motion";
 import { useT } from "@/lib/i18n";
+import { Fuse } from "@/components/ui/Fuse";
 
 /**
  * How it goes, along one surface-mounted cable run. Three conductors fill with the scroll, a spark
- * rides their tip, and each junction box lights the moment current reaches it.
+ * rides their tip, and each junction box lights the moment current reaches it. Phones and tablets
+ * get the finished run, every box lit.
  */
 export function Process() {
   const biz = useBiz();
@@ -20,7 +22,9 @@ export function Process() {
 
   useEffect(() => {
     const el = wrap.current;
-    if (!el || prefersReducedMotion()) return;
+    if (!el || !scrollScenes()) return;
+    let alive = true;
+    let st: { kill: () => void } | undefined;
     const items = Array.from(el.querySelectorAll<HTMLElement>(".step"));
     let lastN = -1;
     const paint = (p: number) => {
@@ -36,23 +40,28 @@ export function Process() {
         setLive(n);
       }
     };
-    const st = ScrollTrigger.create({
-      trigger: el,
-      start: "top 62%",
-      end: "bottom 62%",
-      scrub: 0.3,
-      onUpdate: (s) => paint(s.progress),
-      onRefresh: (s) => paint(s.progress),
+    void loadGsap().then(({ ScrollTrigger }) => {
+      if (!alive) return;
+      const t = ScrollTrigger.create({
+        trigger: el,
+        start: "top 62%",
+        end: "bottom 62%",
+        scrub: 0.3,
+        onUpdate: (s) => paint(s.progress),
+        onRefresh: (s) => paint(s.progress),
+      });
+      paint(t.progress);
+      st = t;
     });
-    paint(st.progress);
-    return () => st.kill();
+    return () => {
+      alive = false;
+      st?.kill();
+    };
   }, []);
 
   return (
     <section aria-labelledby="process-title" className="sec-night relative px-[var(--gutter)] py-24 md:py-36">
-      <p className="fuse">
-        <b>F5</b> {t("How it goes")}
-      </p>
+      <Fuse n={5} phone={8}>{t("How it goes")}</Fuse>
       <h2 id="process-title" className="t-display t-lg mt-5 max-w-3xl">
         {t("Five steps,")} <span className="quiet">{t("and no surprises in any of them.")}</span>
       </h2>

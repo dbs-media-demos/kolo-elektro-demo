@@ -41,11 +41,17 @@ npm run build && npm start
 
 ## Performance and fallbacks
 
-three.js loads on idle, after the page has painted, over a still of the same board. Phones get a lighter scene (half the wires, no duct slots, less dust, lower resolution, 30 fps), and any slow device sheds resolution and then shadows. The scene stops drawing off-screen. Reduced motion, Save-Data or no WebGL get a still of the lit board, no pinning, and every section in its finished state.
+three.js loads on idle, after the page has painted, over a still of the same board, and only on a big screen with a mouse. A slow machine fades back to the still for the rest of the visit. The scene stops drawing off-screen. Reduced motion, Save-Data or no WebGL get a still of the lit board, no pinning, and every section in its finished state.
+
+Phones and tablets never download three.js, GSAP or Lenis. They get stills rendered from the desktop scene, the plan stacked (finished plan, the four days, the totals), work photos as a swipe row with no parallax, two subset font files (`public/fonts`, `scripts/phone-fonts.py`) and the emergency-trade section order (hero, services, reviews, faults, proof, prices, work, plan, how it goes, FAQ, area, contact) via CSS `order`, with fuse numbers to match (`Fuse.tsx`).
 
 ## Scripts
 
 - `node scripts/grade.mjs`: re-grades the photos (source set in `../universal-trades`)
 - `node scripts/capture-stills.mjs`: re-renders the hero stills after a build, then build again. It opens the build in headless Chromium with no server (`scripts/offline.mjs`), and borrows Playwright from `../universal-trades`.
+- `node scripts/held-heights.mjs`: re-measures the phone section heights (`src/app/held.css`) after a build, then build again; `node scripts/held-check.mjs` checks them in headless Chrome.
+- `node scripts/phone-budget.mjs`: phone numbers on the production build (375 px, 4x CPU, slow 4G, both languages); `phone-trace.mjs` breaks down every long task.
+- `node scripts/shots.mjs <dir> [route] [w] [h]` and `node scripts/desktop-check.mjs <dir> [route]`: screenshots top to bottom; the desktop one also reports the GPU and whether the 3D board went live.
+- `python scripts/phone-fonts.py <Geologica.ttf> <InstrumentSans.ttf>`: rebuilds the two phone font files.
 
 Forms validate and show success states but **send nothing**. Reviews, staff and business details are fictional.

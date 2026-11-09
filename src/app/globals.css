@@ -1,5 +1,63 @@
 @import "tailwindcss";
 
+/* `pin`: where scroll scenes run (3D board, pinned plan, parallax): a big screen with a mouse, motion allowed.
+   `flat`: everywhere else. Keep in sync with BIG_SCREEN in src/lib/motion.ts. */
+@custom-variant pin (@media (min-width: 1024px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference));
+@custom-variant flat (@media not all and (min-width: 1024px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference));
+
+/* Phones and tablets load these two files and no other font (scripts/phone-fonts.py); a big screen with a mouse
+   keeps the next/font families from layout.tsx. Mono labels use the system monospace there, and the
+   handwriting is the heading face, smaller and slanted. */
+@font-face {
+  font-family: "Geologica Phone";
+  src: url("/fonts/geologica-phone.woff2") format("woff2");
+  font-weight: 400 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Instrument Phone";
+  src: url("/fonts/instrument-phone.woff2") format("woff2");
+  font-weight: 400 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Hand Phone";
+  src: url("/fonts/geologica-phone.woff2") format("woff2");
+  font-weight: 400 700;
+  font-display: swap;
+  size-adjust: 80%;
+}
+/* Sized like the fonts above, so lines break the same before and after they arrive */
+@font-face {
+  font-family: "Geologica Phone Fallback";
+  src: local("Arial"), local("Helvetica"), local("Roboto");
+  size-adjust: 109.28%;
+  ascent-override: 89.22%;
+  descent-override: 25.16%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Instrument Phone Fallback";
+  src: local("Arial"), local("Helvetica"), local("Roboto");
+  size-adjust: 102.2%;
+  ascent-override: 94.91%;
+  descent-override: 24.46%;
+  line-gap-override: 0%;
+}
+@media not all and (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+  /* Beats the next/font class on <html> */
+  html:root {
+    --font-geologica: "Geologica Phone", "Geologica Phone Fallback";
+    --font-instrument: "Instrument Phone", "Instrument Phone Fallback";
+    --font-jetbrains: ui-monospace, "SF Mono", "Roboto Mono", Menlo, Consolas;
+    --font-caveat: "Hand Phone", "Geologica Phone Fallback";
+  }
+  .t-hand {
+    font-style: italic;
+    letter-spacing: -0.01em;
+  }
+}
+
 /* ────────────────────────────────────────────────────────────────
    Kolo Elektro — design tokens
    Night · Graphite (a dark wall), Bone (paper, enamel), Ash (quiet text),
@@ -239,6 +297,17 @@ body {
       opacity 1s ease var(--d, 0s),
       transform 1.2s var(--ease-out-expo) var(--d, 0s);
   }
+  /* Phones: one short fade-and-rise per block */
+  @media not all and (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+    .rv {
+      transform: translateY(12px);
+    }
+    .rv.rv-in {
+      transition:
+        opacity 0.3s ease var(--d, 0s),
+        transform 0.3s ease-out var(--d, 0s);
+    }
+  }
   .pulse-dot {
     box-shadow: 0 0 0 0 currentColor;
     animation: pulse-dot 2.4s ease-out infinite;
@@ -325,6 +394,12 @@ body {
   /* The scroll flight only exists where the 3D board runs; everywhere else the hero is one screen */
   .hero {
     height: 100svh;
+  }
+  /* Phones: the next section peeks in above the call bar */
+  @media (max-width: 899px) {
+    .hero {
+      height: max(32rem, calc(100svh - 7rem));
+    }
   }
   @media (min-width: 1024px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
     .hero {
@@ -418,44 +493,46 @@ body {
 
   /* ───────────────────────── plan ───────────────────────── */
 
-  .plan-track {
-    height: 420svh;
-  }
   .plan-h {
     font-size: clamp(1.7rem, 4.3vw, 4.5rem);
-  }
-  .plan-step {
-    grid-area: 1 / 1;
-  }
-  .plan-step:not(:first-child) {
-    opacity: 0;
   }
   .plan-room {
     mix-blend-mode: screen;
   }
   @media (max-width: 899px) {
-    .plan-track {
-      height: 340svh;
-    }
     .p-label {
       font-size: 25px;
     }
   }
-  @media (prefers-reduced-motion: reduce) {
+  /* Pinned, one day at a time, only where scroll scenes run; everywhere else the four days stack */
+  @media (min-width: 1024px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
     .plan-track {
-      height: auto;
-    }
-    .plan-sticky {
-      position: static !important;
-      height: auto !important;
-      padding-block: 6rem;
-    }
-    .plan-steps {
-      display: block !important;
+      height: 420svh;
     }
     .plan-step {
-      opacity: 1 !important;
-      margin-bottom: 2rem;
+      grid-area: 1 / 1;
+    }
+    .plan-step:not(:first-child) {
+      opacity: 0;
+    }
+  }
+  @media not all and (min-width: 1024px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    .plan-step {
+      position: relative;
+      padding: 1.15rem 0 1.25rem 1.6rem;
+      border-top: 1px solid var(--rule);
+    }
+    /* The breaker LED of that day's circuit */
+    .plan-step::before {
+      content: "";
+      position: absolute;
+      left: 0.1rem;
+      top: 1.5rem;
+      width: 0.5rem;
+      height: 0.5rem;
+      border-radius: 1px;
+      background: var(--spark);
+      box-shadow: 0 0 10px 1px rgba(255, 178, 36, 0.6);
     }
   }
 
@@ -481,6 +558,12 @@ body {
   .circuit-body > div {
     min-height: 0;
     overflow: hidden;
+  }
+  /* Phones: until a breaker is pressed, the closed circuits' details skip layout (the first screens load lighter) */
+  @media (max-width: 1023.98px) {
+    .tabla:not([data-touched]) .circuit[data-open="false"] .circuit-body > div > div {
+      content-visibility: hidden;
+    }
   }
   .circuit-name {
     transition: transform 0.5s var(--ease-out-expo);
@@ -820,6 +903,11 @@ body {
     animation: sway 5.5s ease-in-out infinite alternate;
     animation-delay: var(--sw, 0s);
   }
+  @media not all and (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+    .sway {
+      animation: none;
+    }
+  }
 
   /* ───────────────────────── faq: a rocker per question ───────────────────────── */
 
@@ -1071,5 +1159,35 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     transition-delay: 0s !important;
+  }
+}
+
+/* Phone order: below 1024 px the page follows the emergency-trade order, so the reviews land in the
+   first four screens: hero, services, reviews, faults, proof, prices, work, the wiring plan, how it
+   goes, questions, area, contact. Desktop keeps the order of the markup. Fuse numbers follow (Fuse.tsx). */
+@media (max-width: 1023.98px) {
+  #main {
+    display: flex;
+    flex-direction: column;
+  }
+  #usluge { order: 1; }
+  #utisci { order: 2; }
+  #kvar { order: 3; }
+  [aria-labelledby="report-title"] { order: 4; }
+  #cene { order: 5; }
+  #radovi { order: 6; }
+  [aria-labelledby="plan-title"] { order: 7; }
+  [aria-labelledby="process-title"] { order: 8; }
+  #pitanja { order: 9; }
+  #teren { order: 10; }
+  #kontakt { order: 11; }
+}
+
+/* Phones: one even breath between sections (the desktop spacing doubles up on a narrow screen) */
+@media (max-width: 767.98px) {
+  #main > section:not(.hero):not(.plan-track),
+  .plan-sticky {
+    padding-top: 4.5rem;
+    padding-bottom: 4.5rem;
   }
 }

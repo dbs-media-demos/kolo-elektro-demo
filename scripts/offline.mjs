@@ -9,7 +9,7 @@ const root = path.resolve(import.meta.dirname, "..");
 const require = createRequire(path.join(root, "../universal-trades/package.json"));
 const { chromium } = require("playwright");
 
-const TYPES = { ".js": "text/javascript", ".css": "text/css", ".woff2": "font/woff2", ".jpg": "image/jpeg", ".png": "image/png", ".svg": "image/svg+xml", ".html": "text/html", ".ico": "image/x-icon" };
+const TYPES = { ".js": "text/javascript", ".css": "text/css", ".woff2": "font/woff2", ".webmanifest": "application/manifest+json", ".jpg": "image/jpeg", ".png": "image/png", ".svg": "image/svg+xml", ".html": "text/html", ".ico": "image/x-icon" };
 export const ORIGIN = "http://kolo.test";
 
 async function answer(route) {
@@ -19,6 +19,7 @@ async function answer(route) {
   if (url.pathname === "/") file = ".next/server/app/index.html";
   else if (url.pathname === "/_next/image") file = ".next/" + decodeURIComponent(url.searchParams.get("url")).replace(/^\/_next\//, "");
   else if (url.pathname.startsWith("/_next/")) file = ".next/" + decodeURIComponent(url.pathname).replace(/^\/_next\//, "");
+  else if (url.pathname.startsWith("/fonts/")) file = "public" + decodeURIComponent(url.pathname);
   else file = `.next/server/app${url.pathname}.html`;
   try {
     const body = await readFile(path.join(root, file));

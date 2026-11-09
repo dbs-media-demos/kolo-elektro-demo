@@ -9,6 +9,7 @@ import { Reveal } from "@/components/ui/Reveal";
 import { nodes } from "@/content/offer";
 import { DAY_NAMES, dayRange, weekFromMonday } from "@/lib/biz-core";
 import { useT } from "@/lib/i18n";
+import { Fuse } from "@/components/ui/Fuse";
 
 /**
  * Where we work. On the concept, Novi Sad as a circuit board: the Danube a band across it, the
@@ -25,9 +26,7 @@ export function Area() {
     <section id="teren" aria-labelledby="area-title" className="sec-night relative px-[var(--gutter)] py-24 md:py-36">
       <div className="grid gap-12 lg:grid-cols-12">
         <Reveal className="lg:col-span-4">
-          <p className="fuse">
-            <b>F10</b> {t("Where we work")}
-          </p>
+          <Fuse n={10}>{t("Where we work")}</Fuse>
           <h2 id="area-title" className="t-display t-lg mt-5">
             {biz.preview ? t("{area} and around.", { area: biz.area }) : t("All of Novi Sad, both banks.")}
           </h2>

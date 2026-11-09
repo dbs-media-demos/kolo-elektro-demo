@@ -2,241 +2,844 @@
 
 @media (max-width: 767px) {
   #usluge,
-  #kvar,
-  #cene,
-  [aria-labelledby="process-title"],
-  #radovi,
-  [aria-labelledby="report-title"],
   #utisci,
-  #pitanja {
+  #kvar,
+  [aria-labelledby="report-title"],
+  #cene,
+  #radovi,
+  [aria-labelledby="plan-title"],
+  [aria-labelledby="process-title"],
+  #pitanja,
+  #main:not([data-preview]) > #teren,
+  #main:not([data-preview]) > #kontakt,
+  #main:not([data-preview]) ~ footer {
     content-visibility: auto;
     contain-intrinsic-size: auto var(--held);
   }
 }
 @media (max-width: 767px) {
-  #usluge { --held: 1252.2px; }
-  #kvar { --held: 1114.5px; }
-  #cene { --held: 1318.3px; }
-  [aria-labelledby="process-title"] { --held: 1378.4px; }
-  #radovi { --held: 1592.1px; }
-  [aria-labelledby="report-title"] { --held: 1001.6px; }
-  #utisci { --held: 1029.3px; }
-  #pitanja { --held: 761px; }
+  [data-lang="sr"] > #usluge { --held: 1253.2px; }
+  [data-lang="sr"] > #utisci { --held: 1030.3px; }
+  [data-lang="sr"] > #kvar { --held: 1115.5px; }
+  [data-lang="sr"] > [aria-labelledby="report-title"] { --held: 987.7px; }
+  [data-lang="sr"] > #cene { --held: 1322.3px; }
+  [data-lang="sr"] > #radovi { --held: 628.4px; }
+  [data-lang="sr"] > [aria-labelledby="plan-title"] { --held: 1298.4px; }
+  [data-lang="sr"] > [aria-labelledby="process-title"] { --held: 1379.4px; }
+  [data-lang="sr"] > #pitanja { --held: 762px; }
+  [data-lang="sr"] > #teren { --held: 873.9px; }
+  [data-lang="sr"] > #kontakt { --held: 1055.7px; }
+  [data-lang="sr"] ~ footer { --held: 811px; }
 }
 @media (min-width: 325px) and (max-width: 767px) {
-  #usluge { --held: 1236.2px; }
-  #radovi { --held: 1586.1px; }
+  [data-lang="sr"] > #usluge { --held: 1237.2px; }
+  [data-lang="sr"] > #radovi { --held: 633px; }
+  [data-lang="sr"] > [aria-labelledby="plan-title"] { --held: 1303.2px; }
+  [data-lang="sr"] > #teren { --held: 877.8px; }
+  [data-lang="sr"] > #kontakt { --held: 1057.4px; }
+  [data-lang="sr"] ~ footer { --held: 812.8px; }
 }
 @media (min-width: 330px) and (max-width: 767px) {
-  [aria-labelledby="process-title"] { --held: 1351.8px; }
-  #radovi { --held: 1559.2px; }
-  [aria-labelledby="report-title"] { --held: 986.7px; }
+  [data-lang="sr"] > #radovi { --held: 637.7px; }
+  [data-lang="sr"] > [aria-labelledby="plan-title"] { --held: 1287.7px; }
+  [data-lang="sr"] > [aria-labelledby="process-title"] { --held: 1352.8px; }
+  [data-lang="sr"] > #teren { --held: 881.7px; }
+  [data-lang="sr"] > #kontakt { --held: 1059.1px; }
+  [data-lang="sr"] ~ footer { --held: 814.6px; }
 }
 @media (min-width: 335px) and (max-width: 767px) {
-  #usluge { --held: 1209.7px; }
-  [aria-labelledby="process-title"] { --held: 1266.3px; }
-  #radovi { --held: 1575.2px; }
-  #pitanja { --held: 757px; }
+  [data-lang="sr"] > #usluge { --held: 1210.7px; }
+  [data-lang="sr"] > #radovi { --held: 642.3px; }
+  [data-lang="sr"] > [aria-labelledby="plan-title"] { --held: 1292.5px; }
+  [data-lang="sr"] > [aria-labelledby="process-title"] { --held: 1267.3px; }
+  [data-lang="sr"] > #pitanja { --held: 758px; }
+  [data-lang="sr"] > #teren { --held: 885.5px; }
+  [data-lang="sr"] > #kontakt { --held: 1060.7px; }
+  [data-lang="sr"] ~ footer { --held: 816.4px; }
 }
 @media (min-width: 340px) and (max-width: 767px) {
-  #radovi { --held: 1591.2px; }
-  [aria-labelledby="report-title"] { --held: 968.3px; }
-  #utisci { --held: 1001.2px; }
+  [data-lang="sr"] > #utisci { --held: 1002.2px; }
+  [data-lang="sr"] > #radovi { --held: 646.9px; }
+  [data-lang="sr"] > [aria-labelledby="plan-title"] { --held: 1297.2px; }
+  [data-lang="sr"] > #teren { --held: 889.4px; }
+  [data-lang="sr"] > #kontakt { --held: 1062.4px; }
+  [data-lang="sr"] ~ footer { --held: 818.2px; }
 }
 @media (min-width: 345px) and (max-width: 767px) {
-  #radovi { --held: 1607.2px; }
-  #utisci { --held: 973.1px; }
+  [data-lang="sr"] > #utisci { --held: 974.1px; }
+  [data-lang="sr"] > #radovi { --held: 651.5px; }
+  [data-lang="sr"] > [aria-labelledby="plan-title"] { --held: 1281.7px; }
+  [data-lang="sr"] > #teren { --held: 893.3px; }
+  [data-lang="sr"] > #kontakt { --held: 1064.1px; }
+  [data-lang="sr"] ~ footer { --held: 820px; }
 }
 @media (min-width: 350px) and (max-width: 767px) {
-  #usluge { --held: 1193.7px; }
-  [aria-labelledby="process-title"] { --held: 1240.3px; }
-  #radovi { --held: 1623.2px; }
-  [aria-labelledby="report-title"] { --held: 943.9px; }
+  [data-lang="sr"] > #usluge { --held: 1194.7px; }
+  [data-lang="sr"] > [aria-labelledby="report-title"] { --held: 944.9px; }
+  [data-lang="sr"] > #radovi { --held: 656.2px; }
+  [data-lang="sr"] > [aria-labelledby="plan-title"] { --held: 1286.5px; }
+  [data-lang="sr"] > [aria-labelledby="process-title"] { --held: 1241.3px; }
+  [data-lang="sr"] > #teren { --held: 897.2px; }
+  [data-lang="sr"] > #kontakt { --held: 1065.7px; }
+  [data-lang="sr"] ~ footer { --held: 797.8px; }
 }
 @media (min-width: 355px) and (max-width: 767px) {
-  [aria-labelledby="process-title"] { --held: 1214.3px; }
-  #radovi { --held: 1639.2px; }
+  [data-lang="sr"] > #cene { --held: 1301.3px; }
+  [data-lang="sr"] > #radovi { --held: 660.8px; }
+  [data-lang="sr"] > [aria-labelledby="plan-title"] { --held: 1291.2px; }
+  [data-lang="sr"] > [aria-labelledby="process-title"] { --held: 1215.3px; }
+  [data-lang="sr"] > #teren { --held: 901px; }
+  [data-lang="sr"] > #kontakt { --held: 1067.4px; }
+  [data-lang="sr"] ~ footer { --held: 799.6px; }
 }
 @media (min-width: 360px) and (max-width: 767px) {
-  [aria-labelledby="process-title"] { --held: 1188.3px; }
-  #radovi { --held: 1655.2px; }
-  #pitanja { --held: 735px; }
+  [data-lang="sr"] > #cene { --held: 1280.3px; }
+  [data-lang="sr"] > #radovi { --held: 665.4px; }
+  [data-lang="sr"] > [aria-labelledby="plan-title"] { --held: 1296px; }
+  [data-lang="sr"] > [aria-labelledby="process-title"] { --held: 1189.3px; }
+  [data-lang="sr"] > #pitanja { --held: 736px; }
+  [data-lang="sr"] > #teren { --held: 904.9px; }
+  [data-lang="sr"] > #kontakt { --held: 1069.1px; }
+  [data-lang="sr"] ~ footer { --held: 801.4px; }
 }
 @media (min-width: 365px) and (max-width: 767px) {
-  #cene { --held: 1274.3px; }
-  #radovi { --held: 1671.2px; }
+  [data-lang="sr"] > #radovi { --held: 670px; }
+  [data-lang="sr"] > [aria-labelledby="plan-title"] { --held: 1300.7px; }
+  [data-lang="sr"] > #teren { --held: 908.8px; }
+  [data-lang="sr"] > #kontakt { --held: 1070.7px; }
+  [data-lang="sr"] ~ footer { --held: 803.2px; }
 }
 @media (min-width: 370px) and (max-width: 767px) {
-  #cene { --held: 1254.8px; }
-  #radovi { --held: 1687.2px; }
+  [data-lang="sr"] > #cene { --held: 1260.8px; }
+  [data-lang="sr"] > #radovi { --held: 674.7px; }
+  [data-lang="sr"] > [aria-labelledby="plan-title"] { --held: 1285.2px; }
+  [data-lang="sr"] > #teren { --held: 912.7px; }
+  [data-lang="sr"] > #kontakt { --held: 1072.4px; }
+  [data-lang="sr"] ~ footer { --held: 785px; }
 }
 @media (min-width: 375px) and (max-width: 767px) {
-  #kvar { --held: 1062.5px; }
-  #cene { --held: 1232.8px; }
-  #radovi { --held: 1703.2px; }
-  #pitanja { --held: 731px; }
+  [data-lang="sr"] > #kvar { --held: 1063.5px; }
+  [data-lang="sr"] > #cene { --held: 1238.8px; }
+  [data-lang="sr"] > #radovi { --held: 679.3px; }
+  [data-lang="sr"] > [aria-labelledby="plan-title"] { --held: 1290px; }
+  [data-lang="sr"] > #pitanja { --held: 732px; }
+  [data-lang="sr"] > #teren { --held: 916.5px; }
+  [data-lang="sr"] > #kontakt { --held: 1074.1px; }
+  [data-lang="sr"] ~ footer { --held: 786.8px; }
 }
 @media (min-width: 380px) and (max-width: 767px) {
-  #usluge { --held: 1177.7px; }
-  #kvar { --held: 1036.5px; }
-  #radovi { --held: 1719.2px; }
-  #utisci { --held: 945.1px; }
+  [data-lang="sr"] > #usluge { --held: 1178.7px; }
+  [data-lang="sr"] > #utisci { --held: 946.1px; }
+  [data-lang="sr"] > #kvar { --held: 1037.5px; }
+  [data-lang="sr"] > #radovi { --held: 683.9px; }
+  [data-lang="sr"] > [aria-labelledby="plan-title"] { --held: 1294.7px; }
+  [data-lang="sr"] > #teren { --held: 920.4px; }
+  [data-lang="sr"] > #kontakt { --held: 1075.7px; }
+  [data-lang="sr"] ~ footer { --held: 788.6px; }
 }
 @media (min-width: 385px) and (max-width: 767px) {
-  #radovi { --held: 1735.2px; }
-  #pitanja { --held: 727px; }
+  [data-lang="sr"] > #radovi { --held: 688.5px; }
+  [data-lang="sr"] > [aria-labelledby="plan-title"] { --held: 1299.5px; }
+  [data-lang="sr"] > #pitanja { --held: 728px; }
+  [data-lang="sr"] > #teren { --held: 924.3px; }
+  [data-lang="sr"] > #kontakt { --held: 1052.1px; }
+  [data-lang="sr"] ~ footer { --held: 790.4px; }
 }
 @media (min-width: 390px) and (max-width: 767px) {
-  #usluge { --held: 1145.7px; }
-  #radovi { --held: 1751.2px; }
-  [aria-labelledby="report-title"] { --held: 918.6px; }
+  [data-lang="sr"] > [aria-labelledby="report-title"] { --held: 919.6px; }
+  [data-lang="sr"] > #radovi { --held: 693.2px; }
+  [data-lang="sr"] > [aria-labelledby="plan-title"] { --held: 1304.2px; }
+  [data-lang="sr"] > #teren { --held: 928.2px; }
+  [data-lang="sr"] > #kontakt { --held: 1001.8px; }
+  [data-lang="sr"] ~ footer { --held: 792.2px; }
 }
 @media (min-width: 395px) and (max-width: 767px) {
-  #radovi { --held: 1734.3px; }
-  [aria-labelledby="report-title"] { --held: 867.3px; }
+  [data-lang="sr"] > [aria-labelledby="report-title"] { --held: 868.3px; }
+  [data-lang="sr"] > #radovi { --held: 644px; }
+  [data-lang="sr"] > [aria-labelledby="plan-title"] { --held: 1309px; }
+  [data-lang="sr"] > #teren { --held: 932px; }
+  [data-lang="sr"] > #kontakt { --held: 1003.5px; }
+  [data-lang="sr"] ~ footer { --held: 794px; }
 }
 @media (min-width: 400px) and (max-width: 767px) {
-  #radovi { --held: 1750.3px; }
+  [data-lang="sr"] > #radovi { --held: 626.6px; }
+  [data-lang="sr"] > [aria-labelledby="plan-title"] { --held: 1313.7px; }
+  [data-lang="sr"] > #teren { --held: 935.9px; }
+  [data-lang="sr"] > #kontakt { --held: 1005.1px; }
+  [data-lang="sr"] ~ footer { --held: 795.8px; }
 }
 @media (min-width: 405px) and (max-width: 767px) {
-  #usluge { --held: 1119.2px; }
-  [aria-labelledby="process-title"] { --held: 1161.6px; }
-  #radovi { --held: 1766.3px; }
+  [data-lang="sr"] > #usluge { --held: 1152.2px; }
+  [data-lang="sr"] > #radovi { --held: 631.2px; }
+  [data-lang="sr"] > [aria-labelledby="plan-title"] { --held: 1298.3px; }
+  [data-lang="sr"] > [aria-labelledby="process-title"] { --held: 1162.6px; }
+  [data-lang="sr"] > #teren { --held: 906.9px; }
+  [data-lang="sr"] > #kontakt { --held: 1006.8px; }
+  [data-lang="sr"] ~ footer { --held: 774.9px; }
 }
 @media (min-width: 410px) and (max-width: 767px) {
-  #kvar { --held: 1014.5px; }
-  #cene { --held: 1180.8px; }
-  #radovi { --held: 1782.3px; }
-  #pitanja { --held: 701px; }
+  [data-lang="sr"] > #cene { --held: 1186.8px; }
+  [data-lang="sr"] > #radovi { --held: 635.8px; }
+  [data-lang="sr"] > [aria-labelledby="plan-title"] { --held: 1303px; }
+  [data-lang="sr"] > #pitanja { --held: 702px; }
+  [data-lang="sr"] > #teren { --held: 910.7px; }
+  [data-lang="sr"] > #kontakt { --held: 1008.5px; }
+  [data-lang="sr"] ~ footer { --held: 776.7px; }
 }
 @media (min-width: 415px) and (max-width: 767px) {
-  #radovi { --held: 1798.3px; }
+  [data-lang="sr"] > #radovi { --held: 640.5px; }
+  [data-lang="sr"] > [aria-labelledby="plan-title"] { --held: 1307.8px; }
+  [data-lang="sr"] > #teren { --held: 914.6px; }
+  [data-lang="sr"] > #kontakt { --held: 1010.1px; }
+  [data-lang="sr"] ~ footer { --held: 778.5px; }
 }
 @media (min-width: 420px) and (max-width: 767px) {
-  #radovi { --held: 1814.3px; }
+  [data-lang="sr"] > #kvar { --held: 1015.5px; }
+  [data-lang="sr"] > #radovi { --held: 645.1px; }
+  [data-lang="sr"] > [aria-labelledby="plan-title"] { --held: 1312.5px; }
+  [data-lang="sr"] > #teren { --held: 918.5px; }
+  [data-lang="sr"] > #kontakt { --held: 1011.8px; }
+  [data-lang="sr"] ~ footer { --held: 780.3px; }
 }
 @media (min-width: 425px) and (max-width: 767px) {
-  #radovi { --held: 1809.4px; }
+  [data-lang="sr"] > #usluge { --held: 1120.2px; }
+  [data-lang="sr"] > #radovi { --held: 649.7px; }
+  [data-lang="sr"] > [aria-labelledby="plan-title"] { --held: 1317.3px; }
+  [data-lang="sr"] > #teren { --held: 922.4px; }
+  [data-lang="sr"] > #kontakt { --held: 1013.5px; }
+  [data-lang="sr"] ~ footer { --held: 782.1px; }
 }
 @media (min-width: 430px) and (max-width: 767px) {
-  #radovi { --held: 1825.4px; }
+  [data-lang="sr"] > #radovi { --held: 654.3px; }
+  [data-lang="sr"] > [aria-labelledby="plan-title"] { --held: 1322px; }
+  [data-lang="sr"] > #teren { --held: 926.2px; }
+  [data-lang="sr"] > #kontakt { --held: 1015.1px; }
+  [data-lang="sr"] ~ footer { --held: 783.9px; }
 }
 @media (min-width: 435px) and (max-width: 767px) {
-  [aria-labelledby="process-title"] { --held: 1109.6px; }
-  #radovi { --held: 1841.4px; }
+  [data-lang="sr"] > #radovi { --held: 659px; }
+  [data-lang="sr"] > [aria-labelledby="plan-title"] { --held: 1326.8px; }
+  [data-lang="sr"] > [aria-labelledby="process-title"] { --held: 1110.6px; }
+  [data-lang="sr"] > #teren { --held: 930.1px; }
+  [data-lang="sr"] > #kontakt { --held: 1016.8px; }
+  [data-lang="sr"] ~ footer { --held: 785.7px; }
 }
 @media (min-width: 440px) and (max-width: 767px) {
-  #radovi { --held: 1857.4px; }
+  [data-lang="sr"] > #radovi { --held: 663.6px; }
+  [data-lang="sr"] > [aria-labelledby="plan-title"] { --held: 1331.5px; }
+  [data-lang="sr"] > #teren { --held: 934px; }
+  [data-lang="sr"] > #kontakt { --held: 1018.5px; }
+  [data-lang="sr"] ~ footer { --held: 787.5px; }
 }
 @media (min-width: 445px) and (max-width: 767px) {
-  #radovi { --held: 1872px; }
+  [data-lang="sr"] > #radovi { --held: 668.2px; }
+  [data-lang="sr"] > [aria-labelledby="plan-title"] { --held: 1335.9px; }
+  [data-lang="sr"] > #teren { --held: 937.5px; }
+  [data-lang="sr"] > #kontakt { --held: 1020px; }
+  [data-lang="sr"] ~ footer { --held: 789.3px; }
 }
 @media (min-width: 450px) and (max-width: 767px) {
-  #radovi { --held: 1886.8px; }
-  #pitanja { --held: 697px; }
+  [data-lang="sr"] > #radovi { --held: 672.9px; }
+  [data-lang="sr"] > [aria-labelledby="plan-title"] { --held: 1313.6px; }
+  [data-lang="sr"] > #pitanja { --held: 698px; }
+  [data-lang="sr"] > #teren { --held: 941.1px; }
+  [data-lang="sr"] > #kontakt { --held: 969.5px; }
+  [data-lang="sr"] ~ footer { --held: 791.1px; }
 }
 @media (min-width: 455px) and (max-width: 767px) {
-  #radovi { --held: 1901.6px; }
+  [data-lang="sr"] > #radovi { --held: 677.5px; }
+  [data-lang="sr"] > [aria-labelledby="plan-title"] { --held: 1318px; }
+  [data-lang="sr"] > #teren { --held: 944.7px; }
+  [data-lang="sr"] > #kontakt { --held: 971px; }
+  [data-lang="sr"] ~ footer { --held: 793px; }
 }
 @media (min-width: 460px) and (max-width: 767px) {
-  #kvar { --held: 962.5px; }
-  #radovi { --held: 1916.3px; }
+  [data-lang="sr"] > #kvar { --held: 963.5px; }
+  [data-lang="sr"] > #cene { --held: 1165.8px; }
+  [data-lang="sr"] > #radovi { --held: 682.1px; }
+  [data-lang="sr"] > [aria-labelledby="plan-title"] { --held: 1322.3px; }
+  [data-lang="sr"] > #teren { --held: 948.3px; }
+  [data-lang="sr"] > #kontakt { --held: 972.6px; }
+  [data-lang="sr"] ~ footer { --held: 794.8px; }
 }
 @media (min-width: 465px) and (max-width: 767px) {
-  #cene { --held: 1158.8px; }
-  #radovi { --held: 1931px; }
+  [data-lang="sr"] > #radovi { --held: 686.7px; }
+  [data-lang="sr"] > [aria-labelledby="plan-title"] { --held: 1306.5px; }
+  [data-lang="sr"] > #teren { --held: 951.8px; }
+  [data-lang="sr"] > #kontakt { --held: 974.1px; }
+  [data-lang="sr"] ~ footer { --held: 796.6px; }
 }
 @media (min-width: 470px) and (max-width: 767px) {
-  #usluge { --held: 1086.3px; }
-  #radovi { --held: 1945.6px; }
-  #utisci { --held: 917px; }
+  [data-lang="sr"] > #usluge { --held: 1087.3px; }
+  [data-lang="sr"] > #utisci { --held: 918px; }
+  [data-lang="sr"] > #radovi { --held: 691.3px; }
+  [data-lang="sr"] > [aria-labelledby="plan-title"] { --held: 1310.8px; }
+  [data-lang="sr"] > #teren { --held: 955.4px; }
+  [data-lang="sr"] > #kontakt { --held: 975.6px; }
+  [data-lang="sr"] ~ footer { --held: 798.4px; }
 }
 @media (min-width: 475px) and (max-width: 767px) {
-  #radovi { --held: 1960.4px; }
+  [data-lang="sr"] > #radovi { --held: 696px; }
+  [data-lang="sr"] > [aria-labelledby="plan-title"] { --held: 1315.2px; }
+  [data-lang="sr"] > #teren { --held: 958.9px; }
+  [data-lang="sr"] > #kontakt { --held: 977.2px; }
+  [data-lang="sr"] ~ footer { --held: 800.2px; }
 }
 @media (min-width: 480px) and (max-width: 767px) {
-  #radovi { --held: 1975.2px; }
-  #utisci { --held: 888.9px; }
+  [data-lang="sr"] > #utisci { --held: 889.9px; }
+  [data-lang="sr"] > #radovi { --held: 700.6px; }
+  [data-lang="sr"] > [aria-labelledby="plan-title"] { --held: 1319.6px; }
+  [data-lang="sr"] > #teren { --held: 962.5px; }
+  [data-lang="sr"] > #kontakt { --held: 978.7px; }
+  [data-lang="sr"] ~ footer { --held: 802px; }
 }
 @media (min-width: 500px) and (max-width: 767px) {
-  [aria-labelledby="process-title"] { --held: 1005px; }
-  #radovi { --held: 2034px; }
-  #utisci { --held: 856px; }
+  [data-lang="sr"] > #utisci { --held: 857px; }
+  [data-lang="sr"] > #radovi { --held: 719.1px; }
+  [data-lang="sr"] > [aria-labelledby="plan-title"] { --held: 1337px; }
+  [data-lang="sr"] > [aria-labelledby="process-title"] { --held: 1006px; }
+  [data-lang="sr"] > #teren { --held: 976.8px; }
+  [data-lang="sr"] > #kontakt { --held: 980.8px; }
+  [data-lang="sr"] ~ footer { --held: 809.2px; }
 }
 @media (min-width: 520px) and (max-width: 767px) {
-  #kvar { --held: 929.6px; }
-  #radovi { --held: 2092.8px; }
+  [data-lang="sr"] > #kvar { --held: 930.6px; }
+  [data-lang="sr"] > #radovi { --held: 737.6px; }
+  [data-lang="sr"] > [aria-labelledby="plan-title"] { --held: 1354.5px; }
+  [data-lang="sr"] > #teren { --held: 991px; }
+  [data-lang="sr"] ~ footer { --held: 816.4px; }
 }
 @media (min-width: 540px) and (max-width: 767px) {
-  #cene { --held: 1125.8px; }
-  [aria-labelledby="process-title"] { --held: 972.1px; }
-  #radovi { --held: 2151.8px; }
-  #pitanja { --held: 667px; }
+  [data-lang="sr"] > #cene { --held: 1132.8px; }
+  [data-lang="sr"] > #radovi { --held: 756.1px; }
+  [data-lang="sr"] > [aria-labelledby="plan-title"] { --held: 1356px; }
+  [data-lang="sr"] > [aria-labelledby="process-title"] { --held: 973.1px; }
+  [data-lang="sr"] > #pitanja { --held: 668px; }
+  [data-lang="sr"] > #teren { --held: 1005.3px; }
+  [data-lang="sr"] ~ footer { --held: 823.7px; }
 }
 @media (min-width: 560px) and (max-width: 767px) {
-  #kvar { --held: 903.6px; }
-  #cene { --held: 1103.1px; }
-  #radovi { --held: 2210.6px; }
+  [data-lang="sr"] > #kvar { --held: 904.6px; }
+  [data-lang="sr"] > #cene { --held: 1110.1px; }
+  [data-lang="sr"] > #radovi { --held: 774.6px; }
+  [data-lang="sr"] > #teren { --held: 1019.5px; }
+  [data-lang="sr"] ~ footer { --held: 830.9px; }
 }
 @media (min-width: 580px) and (max-width: 767px) {
-  #cene { --held: 1051.1px; }
-  #radovi { --held: 2269.6px; }
-  #utisci { --held: 827.9px; }
-  #pitanja { --held: 634.1px; }
+  [data-lang="sr"] > #utisci { --held: 828.9px; }
+  [data-lang="sr"] > #cene { --held: 1058.1px; }
+  [data-lang="sr"] > #radovi { --held: 793.1px; }
+  [data-lang="sr"] > #pitanja { --held: 635.1px; }
+  [data-lang="sr"] > #teren { --held: 1033.8px; }
+  [data-lang="sr"] ~ footer { --held: 838.1px; }
 }
 @media (min-width: 600px) and (max-width: 767px) {
-  #usluge { --held: 1059.8px; }
-  #kvar { --held: 881.6px; }
-  #radovi { --held: 2328.4px; }
+  [data-lang="sr"] > #usluge { --held: 1060.8px; }
+  [data-lang="sr"] > #radovi { --held: 811.6px; }
+  [data-lang="sr"] > #teren { --held: 1048.1px; }
+  [data-lang="sr"] ~ footer { --held: 845.3px; }
 }
 @media (min-width: 620px) and (max-width: 767px) {
-  #radovi { --held: 2387.3px; }
+  [data-lang="sr"] > #kvar { --held: 882.6px; }
+  [data-lang="sr"] > #radovi { --held: 830.1px; }
+  [data-lang="sr"] > #teren { --held: 1062.3px; }
+  [data-lang="sr"] ~ footer { --held: 852.5px; }
 }
 @media (min-width: 640px) and (max-width: 767px) {
-  #usluge { --held: 1147.3px; }
-  #cene { --held: 1076px; }
-  #radovi { --held: 2386.6px; }
-  [aria-labelledby="report-title"] { --held: 899.3px; }
+  [data-lang="sr"] > #usluge { --held: 1148.3px; }
+  [data-lang="sr"] > [aria-labelledby="report-title"] { --held: 900.3px; }
+  [data-lang="sr"] > #cene { --held: 1083px; }
+  [data-lang="sr"] > #radovi { --held: 828.8px; }
+  [data-lang="sr"] > [aria-labelledby="plan-title"] { --held: 1356.3px; }
+  [data-lang="sr"] > #teren { --held: 1076.6px; }
+  [data-lang="sr"] > #kontakt { --held: 886.8px; }
+  [data-lang="sr"] ~ footer { --held: 716.6px; }
 }
 @media (min-width: 660px) and (max-width: 767px) {
-  #cene { --held: 1077.1px; }
-  #radovi { --held: 2445.5px; }
+  [data-lang="sr"] > #cene { --held: 1084.1px; }
+  [data-lang="sr"] > #radovi { --held: 847.3px; }
+  [data-lang="sr"] > [aria-labelledby="plan-title"] { --held: 1357.2px; }
+  [data-lang="sr"] > #teren { --held: 1090.8px; }
+  [data-lang="sr"] ~ footer { --held: 723.8px; }
 }
 @media (min-width: 680px) and (max-width: 767px) {
-  #cene { --held: 1058.7px; }
-  #radovi { --held: 2504.4px; }
+  [data-lang="sr"] > #cene { --held: 1065.7px; }
+  [data-lang="sr"] > #radovi { --held: 865.8px; }
+  [data-lang="sr"] > [aria-labelledby="plan-title"] { --held: 1358px; }
+  [data-lang="sr"] > #teren { --held: 1105.1px; }
+  [data-lang="sr"] > #kontakt { --held: 887.8px; }
+  [data-lang="sr"] ~ footer { --held: 731px; }
 }
 @media (min-width: 700px) and (max-width: 767px) {
-  #usluge { --held: 1120.8px; }
-  #cene { --held: 1059.8px; }
-  #radovi { --held: 2563.2px; }
+  [data-lang="sr"] > #usluge { --held: 1121.8px; }
+  [data-lang="sr"] > #cene { --held: 1066.8px; }
+  [data-lang="sr"] > #radovi { --held: 884.3px; }
+  [data-lang="sr"] > [aria-labelledby="plan-title"] { --held: 1358.9px; }
+  [data-lang="sr"] > #teren { --held: 1119.4px; }
+  [data-lang="sr"] > #kontakt { --held: 888.9px; }
+  [data-lang="sr"] ~ footer { --held: 738.3px; }
 }
 @media (min-width: 720px) and (max-width: 767px) {
-  #cene { --held: 1060.9px; }
-  #radovi { --held: 2622.1px; }
+  [data-lang="sr"] > #cene { --held: 1067.9px; }
+  [data-lang="sr"] > #radovi { --held: 902.8px; }
+  [data-lang="sr"] > [aria-labelledby="plan-title"] { --held: 1359.7px; }
+  [data-lang="sr"] > #teren { --held: 1133.6px; }
+  [data-lang="sr"] > #kontakt { --held: 890.1px; }
+  [data-lang="sr"] ~ footer { --held: 745.5px; }
 }
 @media (min-width: 740px) and (max-width: 767px) {
-  #kvar { --held: 855.6px; }
-  #cene { --held: 1061.9px; }
-  #radovi { --held: 2681px; }
+  [data-lang="sr"] > #kvar { --held: 856.6px; }
+  [data-lang="sr"] > #cene { --held: 1068.9px; }
+  [data-lang="sr"] > #radovi { --held: 921.3px; }
+  [data-lang="sr"] > [aria-labelledby="plan-title"] { --held: 1360.6px; }
+  [data-lang="sr"] > #teren { --held: 1147.9px; }
+  [data-lang="sr"] > #kontakt { --held: 891.2px; }
+  [data-lang="sr"] ~ footer { --held: 752.7px; }
 }
 @media (min-width: 760px) and (max-width: 767px) {
-  #usluge { --held: 1094.9px; }
-  #kvar { --held: 856.2px; }
-  #cene { --held: 1063.6px; }
-  [aria-labelledby="process-title"] { --held: 972.7px; }
-  #radovi { --held: 2741.1px; }
-  [aria-labelledby="report-title"] { --held: 899.9px; }
-  #utisci { --held: 828.5px; }
-  #pitanja { --held: 634.7px; }
+  [data-lang="sr"] > #usluge { --held: 1095.9px; }
+  [data-lang="sr"] > #utisci { --held: 829.5px; }
+  [data-lang="sr"] > #kvar { --held: 857.2px; }
+  [data-lang="sr"] > [aria-labelledby="report-title"] { --held: 900.9px; }
+  [data-lang="sr"] > #cene { --held: 1070.6px; }
+  [data-lang="sr"] > #radovi { --held: 940.9px; }
+  [data-lang="sr"] > [aria-labelledby="plan-title"] { --held: 1361.4px; }
+  [data-lang="sr"] > [aria-labelledby="process-title"] { --held: 973.7px; }
+  [data-lang="sr"] > #pitanja { --held: 635.7px; }
+  [data-lang="sr"] > #teren { --held: 1162.8px; }
+  [data-lang="sr"] > #kontakt { --held: 892.4px; }
+  [data-lang="sr"] ~ footer { --held: 759.9px; }
 }
 @media (min-width: 767px) and (max-width: 767px) {
-  #usluge { --held: 1095.2px; }
-  #kvar { --held: 856.5px; }
-  #cene { --held: 1064.3px; }
-  [aria-labelledby="process-title"] { --held: 973px; }
-  #radovi { --held: 2762.3px; }
-  [aria-labelledby="report-title"] { --held: 900.2px; }
-  #utisci { --held: 828.8px; }
-  #pitanja { --held: 635px; }
+  [data-lang="sr"] > #usluge { --held: 1096.2px; }
+  [data-lang="sr"] > #utisci { --held: 829.8px; }
+  [data-lang="sr"] > #kvar { --held: 857.5px; }
+  [data-lang="sr"] > [aria-labelledby="report-title"] { --held: 901.2px; }
+  [data-lang="sr"] > #cene { --held: 1071.3px; }
+  [data-lang="sr"] > #radovi { --held: 948px; }
+  [data-lang="sr"] > [aria-labelledby="plan-title"] { --held: 1361.7px; }
+  [data-lang="sr"] > [aria-labelledby="process-title"] { --held: 974px; }
+  [data-lang="sr"] > #pitanja { --held: 636px; }
+  [data-lang="sr"] > #teren { --held: 1168px; }
+  [data-lang="sr"] > #kontakt { --held: 892.8px; }
+  [data-lang="sr"] ~ footer { --held: 762.5px; }
+}
+@media (max-width: 767px) {
+  [data-lang="en"] > #usluge { --held: 1268px; }
+  [data-lang="en"] > #utisci { --held: 1058.4px; }
+  [data-lang="en"] > #kvar { --held: 1189.5px; }
+  [data-lang="en"] > [aria-labelledby="report-title"] { --held: 1055.9px; }
+  [data-lang="en"] > #cene { --held: 1409.1px; }
+  [data-lang="en"] > #radovi { --held: 627.3px; }
+  [data-lang="en"] > [aria-labelledby="plan-title"] { --held: 1298.4px; }
+  [data-lang="en"] > [aria-labelledby="process-title"] { --held: 1404.8px; }
+  [data-lang="en"] > #pitanja { --held: 818px; }
+  [data-lang="en"] > #teren { --held: 873.9px; }
+  [data-lang="en"] > #kontakt { --held: 1094.1px; }
+  [data-lang="en"] ~ footer { --held: 811px; }
+}
+@media (min-width: 325px) and (max-width: 767px) {
+  [data-lang="en"] > #usluge { --held: 1252px; }
+  [data-lang="en"] > #kvar { --held: 1167.5px; }
+  [data-lang="en"] > [aria-labelledby="report-title"] { --held: 1037.5px; }
+  [data-lang="en"] > #radovi { --held: 631.9px; }
+  [data-lang="en"] > [aria-labelledby="plan-title"] { --held: 1303.2px; }
+  [data-lang="en"] > #pitanja { --held: 792px; }
+  [data-lang="en"] > #teren { --held: 877.8px; }
+  [data-lang="en"] > #kontakt { --held: 1057.4px; }
+  [data-lang="en"] ~ footer { --held: 812.8px; }
+}
+@media (min-width: 330px) and (max-width: 767px) {
+  [data-lang="en"] > #usluge { --held: 1220px; }
+  [data-lang="en"] > #radovi { --held: 636.5px; }
+  [data-lang="en"] > [aria-labelledby="plan-title"] { --held: 1307.9px; }
+  [data-lang="en"] > [aria-labelledby="process-title"] { --held: 1378.8px; }
+  [data-lang="en"] > #pitanja { --held: 770px; }
+  [data-lang="en"] > #teren { --held: 881.7px; }
+  [data-lang="en"] > #kontakt { --held: 1059.1px; }
+  [data-lang="en"] ~ footer { --held: 814.6px; }
+}
+@media (min-width: 335px) and (max-width: 767px) {
+  [data-lang="en"] > #utisci { --held: 1030.3px; }
+  [data-lang="en"] > [aria-labelledby="report-title"] { --held: 1013px; }
+  [data-lang="en"] > #cene { --held: 1368.6px; }
+  [data-lang="en"] > #radovi { --held: 641.2px; }
+  [data-lang="en"] > [aria-labelledby="plan-title"] { --held: 1312.7px; }
+  [data-lang="en"] > #pitanja { --held: 766px; }
+  [data-lang="en"] > #teren { --held: 885.5px; }
+  [data-lang="en"] > #kontakt { --held: 1060.7px; }
+  [data-lang="en"] ~ footer { --held: 816.4px; }
+}
+@media (min-width: 340px) and (max-width: 767px) {
+  [data-lang="en"] > [aria-labelledby="report-title"] { --held: 976.2px; }
+  [data-lang="en"] > #cene { --held: 1335.7px; }
+  [data-lang="en"] > #radovi { --held: 624.9px; }
+  [data-lang="en"] > [aria-labelledby="plan-title"] { --held: 1317.4px; }
+  [data-lang="en"] > [aria-labelledby="process-title"] { --held: 1352.8px; }
+  [data-lang="en"] > #teren { --held: 889.4px; }
+  [data-lang="en"] > #kontakt { --held: 1062.4px; }
+  [data-lang="en"] ~ footer { --held: 818.2px; }
+}
+@media (min-width: 345px) and (max-width: 767px) {
+  [data-lang="en"] > #usluge { --held: 1188px; }
+  [data-lang="en"] > #cene { --held: 1313.7px; }
+  [data-lang="en"] > #radovi { --held: 629.5px; }
+  [data-lang="en"] > [aria-labelledby="plan-title"] { --held: 1322.2px; }
+  [data-lang="en"] > #teren { --held: 893.3px; }
+  [data-lang="en"] > #kontakt { --held: 1064.1px; }
+  [data-lang="en"] ~ footer { --held: 820px; }
+}
+@media (min-width: 350px) and (max-width: 767px) {
+  [data-lang="en"] > #usluge { --held: 1172px; }
+  [data-lang="en"] > #cene { --held: 1292.7px; }
+  [data-lang="en"] > #radovi { --held: 634.2px; }
+  [data-lang="en"] > [aria-labelledby="plan-title"] { --held: 1306.7px; }
+  [data-lang="en"] > #teren { --held: 897.2px; }
+  [data-lang="en"] > #kontakt { --held: 1065.7px; }
+  [data-lang="en"] ~ footer { --held: 821.8px; }
+}
+@media (min-width: 355px) and (max-width: 767px) {
+  [data-lang="en"] > [aria-labelledby="report-title"] { --held: 926.5px; }
+  [data-lang="en"] > #radovi { --held: 638.8px; }
+  [data-lang="en"] > [aria-labelledby="plan-title"] { --held: 1311.5px; }
+  [data-lang="en"] > #teren { --held: 901px; }
+  [data-lang="en"] > #kontakt { --held: 1067.4px; }
+  [data-lang="en"] ~ footer { --held: 823.6px; }
+}
+@media (min-width: 360px) and (max-width: 767px) {
+  [data-lang="en"] > #cene { --held: 1240.7px; }
+  [data-lang="en"] > #radovi { --held: 643.4px; }
+  [data-lang="en"] > [aria-labelledby="plan-title"] { --held: 1316.2px; }
+  [data-lang="en"] > #teren { --held: 904.9px; }
+  [data-lang="en"] > #kontakt { --held: 1069.1px; }
+  [data-lang="en"] ~ footer { --held: 805.4px; }
+}
+@media (min-width: 365px) and (max-width: 767px) {
+  [data-lang="en"] > #radovi { --held: 648px; }
+  [data-lang="en"] > [aria-labelledby="plan-title"] { --held: 1321px; }
+  [data-lang="en"] > [aria-labelledby="process-title"] { --held: 1300.8px; }
+  [data-lang="en"] > #teren { --held: 908.8px; }
+  [data-lang="en"] > #kontakt { --held: 1070.7px; }
+  [data-lang="en"] ~ footer { --held: 807.2px; }
+}
+@media (min-width: 370px) and (max-width: 767px) {
+  [data-lang="en"] > #kvar { --held: 1093.5px; }
+  [data-lang="en"] > #radovi { --held: 652.7px; }
+  [data-lang="en"] > [aria-labelledby="plan-title"] { --held: 1325.7px; }
+  [data-lang="en"] > #pitanja { --held: 762px; }
+  [data-lang="en"] > #teren { --held: 912.7px; }
+  [data-lang="en"] > #kontakt { --held: 1072.4px; }
+  [data-lang="en"] ~ footer { --held: 809px; }
+}
+@media (min-width: 375px) and (max-width: 767px) {
+  [data-lang="en"] > #radovi { --held: 657.3px; }
+  [data-lang="en"] > [aria-labelledby="plan-title"] { --held: 1330.5px; }
+  [data-lang="en"] > #pitanja { --held: 736px; }
+  [data-lang="en"] > #teren { --held: 916.5px; }
+  [data-lang="en"] > #kontakt { --held: 1074.1px; }
+  [data-lang="en"] ~ footer { --held: 810.8px; }
+}
+@media (min-width: 380px) and (max-width: 767px) {
+  [data-lang="en"] > #utisci { --held: 1002.2px; }
+  [data-lang="en"] > #kvar { --held: 1067.5px; }
+  [data-lang="en"] > #radovi { --held: 661.9px; }
+  [data-lang="en"] > [aria-labelledby="plan-title"] { --held: 1315px; }
+  [data-lang="en"] > [aria-labelledby="process-title"] { --held: 1274.8px; }
+  [data-lang="en"] > #pitanja { --held: 732px; }
+  [data-lang="en"] > #teren { --held: 920.4px; }
+  [data-lang="en"] > #kontakt { --held: 1075.7px; }
+  [data-lang="en"] ~ footer { --held: 812.6px; }
+}
+@media (min-width: 385px) and (max-width: 767px) {
+  [data-lang="en"] > #radovi { --held: 666.5px; }
+  [data-lang="en"] > [aria-labelledby="plan-title"] { --held: 1319.7px; }
+  [data-lang="en"] > [aria-labelledby="process-title"] { --held: 1248.8px; }
+  [data-lang="en"] > #teren { --held: 924.3px; }
+  [data-lang="en"] > #kontakt { --held: 1052.1px; }
+  [data-lang="en"] ~ footer { --held: 814.4px; }
+}
+@media (min-width: 390px) and (max-width: 767px) {
+  [data-lang="en"] > #radovi { --held: 671.2px; }
+  [data-lang="en"] > [aria-labelledby="plan-title"] { --held: 1324.5px; }
+  [data-lang="en"] > #teren { --held: 928.2px; }
+  [data-lang="en"] > #kontakt { --held: 1053.8px; }
+  [data-lang="en"] ~ footer { --held: 816.2px; }
+}
+@media (min-width: 395px) and (max-width: 767px) {
+  [data-lang="en"] > #usluge { --held: 1145.5px; }
+  [data-lang="en"] > #kvar { --held: 1015.5px; }
+  [data-lang="en"] > [aria-labelledby="report-title"] { --held: 893.6px; }
+  [data-lang="en"] > #cene { --held: 1219.7px; }
+  [data-lang="en"] > #radovi { --held: 675.8px; }
+  [data-lang="en"] > [aria-labelledby="plan-title"] { --held: 1309px; }
+  [data-lang="en"] > #teren { --held: 932px; }
+  [data-lang="en"] > #kontakt { --held: 1003.5px; }
+  [data-lang="en"] ~ footer { --held: 818px; }
+}
+@media (min-width: 400px) and (max-width: 767px) {
+  [data-lang="en"] > #utisci { --held: 974.1px; }
+  [data-lang="en"] > #radovi { --held: 680.4px; }
+  [data-lang="en"] > [aria-labelledby="plan-title"] { --held: 1313.7px; }
+  [data-lang="en"] > [aria-labelledby="process-title"] { --held: 1215.9px; }
+  [data-lang="en"] > #teren { --held: 935.9px; }
+  [data-lang="en"] > #kontakt { --held: 1005.1px; }
+  [data-lang="en"] ~ footer { --held: 795.8px; }
+}
+@media (min-width: 405px) and (max-width: 767px) {
+  [data-lang="en"] > #radovi { --held: 652.1px; }
+  [data-lang="en"] > [aria-labelledby="plan-title"] { --held: 1318.5px; }
+  [data-lang="en"] > #teren { --held: 939.8px; }
+  [data-lang="en"] > #kontakt { --held: 1006.8px; }
+  [data-lang="en"] ~ footer { --held: 774.9px; }
+}
+@media (min-width: 410px) and (max-width: 767px) {
+  [data-lang="en"] > #usluge { --held: 1120.2px; }
+  [data-lang="en"] > #radovi { --held: 656.7px; }
+  [data-lang="en"] > [aria-labelledby="plan-title"] { --held: 1323.2px; }
+  [data-lang="en"] > #teren { --held: 943.7px; }
+  [data-lang="en"] > #kontakt { --held: 1008.5px; }
+  [data-lang="en"] ~ footer { --held: 776.7px; }
+}
+@media (min-width: 415px) and (max-width: 767px) {
+  [data-lang="en"] > #radovi { --held: 661.4px; }
+  [data-lang="en"] > [aria-labelledby="plan-title"] { --held: 1328px; }
+  [data-lang="en"] > #teren { --held: 947.5px; }
+  [data-lang="en"] > #kontakt { --held: 1010.1px; }
+  [data-lang="en"] ~ footer { --held: 778.5px; }
+}
+@media (min-width: 420px) and (max-width: 767px) {
+  [data-lang="en"] > #cene { --held: 1198.7px; }
+  [data-lang="en"] > #radovi { --held: 666px; }
+  [data-lang="en"] > [aria-labelledby="plan-title"] { --held: 1332.7px; }
+  [data-lang="en"] > #teren { --held: 951.4px; }
+  [data-lang="en"] > #kontakt { --held: 1011.8px; }
+  [data-lang="en"] ~ footer { --held: 780.3px; }
+}
+@media (min-width: 425px) and (max-width: 767px) {
+  [data-lang="en"] > #radovi { --held: 670.6px; }
+  [data-lang="en"] > [aria-labelledby="plan-title"] { --held: 1337.5px; }
+  [data-lang="en"] > #teren { --held: 955.3px; }
+  [data-lang="en"] > #kontakt { --held: 1013.5px; }
+  [data-lang="en"] ~ footer { --held: 782.1px; }
+}
+@media (min-width: 430px) and (max-width: 767px) {
+  [data-lang="en"] > #radovi { --held: 675.2px; }
+  [data-lang="en"] > [aria-labelledby="plan-title"] { --held: 1322px; }
+  [data-lang="en"] > #pitanja { --held: 728px; }
+  [data-lang="en"] > #teren { --held: 959.2px; }
+  [data-lang="en"] > #kontakt { --held: 1015.1px; }
+  [data-lang="en"] ~ footer { --held: 783.9px; }
+}
+@media (min-width: 435px) and (max-width: 767px) {
+  [data-lang="en"] > #utisci { --held: 946.1px; }
+  [data-lang="en"] > #radovi { --held: 679.9px; }
+  [data-lang="en"] > [aria-labelledby="plan-title"] { --held: 1326.8px; }
+  [data-lang="en"] > #teren { --held: 963px; }
+  [data-lang="en"] > #kontakt { --held: 1016.8px; }
+  [data-lang="en"] ~ footer { --held: 785.7px; }
+}
+@media (min-width: 440px) and (max-width: 767px) {
+  [data-lang="en"] > #radovi { --held: 663.6px; }
+  [data-lang="en"] > [aria-labelledby="plan-title"] { --held: 1331.5px; }
+  [data-lang="en"] > #teren { --held: 934px; }
+  [data-lang="en"] > #kontakt { --held: 1018.5px; }
+  [data-lang="en"] ~ footer { --held: 787.5px; }
+}
+@media (min-width: 445px) and (max-width: 767px) {
+  [data-lang="en"] > [aria-labelledby="report-title"] { --held: 868.3px; }
+  [data-lang="en"] > #radovi { --held: 668.2px; }
+  [data-lang="en"] > [aria-labelledby="plan-title"] { --held: 1335.9px; }
+  [data-lang="en"] > [aria-labelledby="process-title"] { --held: 1189.3px; }
+  [data-lang="en"] > #pitanja { --held: 724px; }
+  [data-lang="en"] > #teren { --held: 937.5px; }
+  [data-lang="en"] > #kontakt { --held: 1020px; }
+  [data-lang="en"] ~ footer { --held: 789.3px; }
+}
+@media (min-width: 450px) and (max-width: 767px) {
+  [data-lang="en"] > #cene { --held: 1165.8px; }
+  [data-lang="en"] > #radovi { --held: 672.9px; }
+  [data-lang="en"] > [aria-labelledby="plan-title"] { --held: 1340.2px; }
+  [data-lang="en"] > [aria-labelledby="process-title"] { --held: 1162.6px; }
+  [data-lang="en"] > #teren { --held: 941.1px; }
+  [data-lang="en"] > #kontakt { --held: 1021.5px; }
+  [data-lang="en"] ~ footer { --held: 791.1px; }
+}
+@media (min-width: 455px) and (max-width: 767px) {
+  [data-lang="en"] > #radovi { --held: 677.5px; }
+  [data-lang="en"] > [aria-labelledby="plan-title"] { --held: 1344.6px; }
+  [data-lang="en"] > #teren { --held: 944.7px; }
+  [data-lang="en"] > #kontakt { --held: 1023px; }
+  [data-lang="en"] ~ footer { --held: 793px; }
+}
+@media (min-width: 460px) and (max-width: 767px) {
+  [data-lang="en"] > #radovi { --held: 682.1px; }
+  [data-lang="en"] > [aria-labelledby="plan-title"] { --held: 1349px; }
+  [data-lang="en"] > [aria-labelledby="process-title"] { --held: 1136px; }
+  [data-lang="en"] > #teren { --held: 948.3px; }
+  [data-lang="en"] > #kontakt { --held: 1024.6px; }
+  [data-lang="en"] ~ footer { --held: 794.8px; }
+}
+@media (min-width: 465px) and (max-width: 767px) {
+  [data-lang="en"] > #radovi { --held: 686.7px; }
+  [data-lang="en"] > [aria-labelledby="plan-title"] { --held: 1353.4px; }
+  [data-lang="en"] > #teren { --held: 951.8px; }
+  [data-lang="en"] > #kontakt { --held: 1026.1px; }
+  [data-lang="en"] ~ footer { --held: 796.6px; }
+}
+@media (min-width: 470px) and (max-width: 767px) {
+  [data-lang="en"] > #radovi { --held: 691.3px; }
+  [data-lang="en"] > [aria-labelledby="plan-title"] { --held: 1337.5px; }
+  [data-lang="en"] > #teren { --held: 955.4px; }
+  [data-lang="en"] > #kontakt { --held: 1027.6px; }
+  [data-lang="en"] ~ footer { --held: 798.4px; }
+}
+@media (min-width: 475px) and (max-width: 767px) {
+  [data-lang="en"] > #radovi { --held: 696px; }
+  [data-lang="en"] > [aria-labelledby="plan-title"] { --held: 1341.8px; }
+  [data-lang="en"] > #teren { --held: 958.9px; }
+  [data-lang="en"] > #kontakt { --held: 1029.2px; }
+  [data-lang="en"] ~ footer { --held: 800.2px; }
+}
+@media (min-width: 480px) and (max-width: 767px) {
+  [data-lang="en"] > #radovi { --held: 700.6px; }
+  [data-lang="en"] > [aria-labelledby="plan-title"] { --held: 1346.2px; }
+  [data-lang="en"] > [aria-labelledby="process-title"] { --held: 1110px; }
+  [data-lang="en"] > #teren { --held: 962.5px; }
+  [data-lang="en"] > #kontakt { --held: 1030.7px; }
+  [data-lang="en"] ~ footer { --held: 802px; }
+}
+@media (min-width: 500px) and (max-width: 767px) {
+  [data-lang="en"] > #kvar { --held: 989.5px; }
+  [data-lang="en"] > #radovi { --held: 719.1px; }
+  [data-lang="en"] > [aria-labelledby="plan-title"] { --held: 1337px; }
+  [data-lang="en"] > [aria-labelledby="process-title"] { --held: 1058px; }
+  [data-lang="en"] > #pitanja { --held: 698px; }
+  [data-lang="en"] > #teren { --held: 976.8px; }
+  [data-lang="en"] > #kontakt { --held: 980.8px; }
+  [data-lang="en"] ~ footer { --held: 809.2px; }
+}
+@media (min-width: 520px) and (max-width: 767px) {
+  [data-lang="en"] > #utisci { --held: 913.1px; }
+  [data-lang="en"] > #cene { --held: 1113.8px; }
+  [data-lang="en"] > #radovi { --held: 737.6px; }
+  [data-lang="en"] > [aria-labelledby="plan-title"] { --held: 1354.5px; }
+  [data-lang="en"] > [aria-labelledby="process-title"] { --held: 1032px; }
+  [data-lang="en"] > #teren { --held: 991px; }
+  [data-lang="en"] ~ footer { --held: 816.4px; }
+}
+@media (min-width: 540px) and (max-width: 767px) {
+  [data-lang="en"] > #kvar { --held: 915.5px; }
+  [data-lang="en"] > #radovi { --held: 756.1px; }
+  [data-lang="en"] > [aria-labelledby="plan-title"] { --held: 1356px; }
+  [data-lang="en"] > #pitanja { --held: 665.1px; }
+  [data-lang="en"] > #teren { --held: 1005.3px; }
+  [data-lang="en"] ~ footer { --held: 823.7px; }
+}
+@media (min-width: 560px) and (max-width: 767px) {
+  [data-lang="en"] > #usluge { --held: 1060.8px; }
+  [data-lang="en"] > #utisci { --held: 885.1px; }
+  [data-lang="en"] > #cene { --held: 1091px; }
+  [data-lang="en"] > #radovi { --held: 774.6px; }
+  [data-lang="en"] > #teren { --held: 1019.5px; }
+  [data-lang="en"] ~ footer { --held: 830.9px; }
+}
+@media (min-width: 580px) and (max-width: 767px) {
+  [data-lang="en"] > #utisci { --held: 857px; }
+  [data-lang="en"] > #radovi { --held: 793.1px; }
+  [data-lang="en"] > #teren { --held: 1033.8px; }
+  [data-lang="en"] ~ footer { --held: 838.1px; }
+}
+@media (min-width: 600px) and (max-width: 767px) {
+  [data-lang="en"] > #kvar { --held: 882.6px; }
+  [data-lang="en"] > #cene { --held: 1071.5px; }
+  [data-lang="en"] > #radovi { --held: 811.6px; }
+  [data-lang="en"] > #pitanja { --held: 661.1px; }
+  [data-lang="en"] > #teren { --held: 1048.1px; }
+  [data-lang="en"] ~ footer { --held: 845.3px; }
+}
+@media (min-width: 620px) and (max-width: 767px) {
+  [data-lang="en"] > #radovi { --held: 830.1px; }
+  [data-lang="en"] > #teren { --held: 1062.3px; }
+  [data-lang="en"] ~ footer { --held: 852.5px; }
+}
+@media (min-width: 640px) and (max-width: 767px) {
+  [data-lang="en"] > #usluge { --held: 1148.3px; }
+  [data-lang="en"] > #utisci { --held: 828.9px; }
+  [data-lang="en"] > [aria-labelledby="report-title"] { --held: 900.3px; }
+  [data-lang="en"] > #cene { --held: 1096.5px; }
+  [data-lang="en"] > #radovi { --held: 828.8px; }
+  [data-lang="en"] > [aria-labelledby="plan-title"] { --held: 1356.3px; }
+  [data-lang="en"] > #teren { --held: 1076.6px; }
+  [data-lang="en"] > #kontakt { --held: 886.8px; }
+  [data-lang="en"] ~ footer { --held: 716.6px; }
+}
+@media (min-width: 660px) and (max-width: 767px) {
+  [data-lang="en"] > #usluge { --held: 1121.8px; }
+  [data-lang="en"] > #cene { --held: 1097.5px; }
+  [data-lang="en"] > #radovi { --held: 847.3px; }
+  [data-lang="en"] > [aria-labelledby="plan-title"] { --held: 1357.2px; }
+  [data-lang="en"] > #teren { --held: 1090.8px; }
+  [data-lang="en"] ~ footer { --held: 723.8px; }
+}
+@media (min-width: 680px) and (max-width: 767px) {
+  [data-lang="en"] > #cene { --held: 1098.6px; }
+  [data-lang="en"] > #radovi { --held: 865.8px; }
+  [data-lang="en"] > [aria-labelledby="plan-title"] { --held: 1358px; }
+  [data-lang="en"] > #pitanja { --held: 635.1px; }
+  [data-lang="en"] > #teren { --held: 1105.1px; }
+  [data-lang="en"] > #kontakt { --held: 887.8px; }
+  [data-lang="en"] ~ footer { --held: 731px; }
+}
+@media (min-width: 700px) and (max-width: 767px) {
+  [data-lang="en"] > #cene { --held: 1099.7px; }
+  [data-lang="en"] > #radovi { --held: 884.3px; }
+  [data-lang="en"] > [aria-labelledby="plan-title"] { --held: 1358.9px; }
+  [data-lang="en"] > [aria-labelledby="process-title"] { --held: 999.1px; }
+  [data-lang="en"] > #teren { --held: 1119.4px; }
+  [data-lang="en"] > #kontakt { --held: 888.9px; }
+  [data-lang="en"] ~ footer { --held: 738.3px; }
+}
+@media (min-width: 720px) and (max-width: 767px) {
+  [data-lang="en"] > #cene { --held: 1100.8px; }
+  [data-lang="en"] > #radovi { --held: 902.8px; }
+  [data-lang="en"] > [aria-labelledby="plan-title"] { --held: 1359.7px; }
+  [data-lang="en"] > #teren { --held: 1133.6px; }
+  [data-lang="en"] > #kontakt { --held: 890.1px; }
+  [data-lang="en"] ~ footer { --held: 745.5px; }
+}
+@media (min-width: 740px) and (max-width: 767px) {
+  [data-lang="en"] > #cene { --held: 1101.9px; }
+  [data-lang="en"] > #radovi { --held: 888.3px; }
+  [data-lang="en"] > [aria-labelledby="plan-title"] { --held: 1360.6px; }
+  [data-lang="en"] > #teren { --held: 1147.9px; }
+  [data-lang="en"] > #kontakt { --held: 891.2px; }
+  [data-lang="en"] ~ footer { --held: 752.7px; }
+}
+@media (min-width: 760px) and (max-width: 767px) {
+  [data-lang="en"] > #usluge { --held: 1095.9px; }
+  [data-lang="en"] > #utisci { --held: 829.5px; }
+  [data-lang="en"] > #kvar { --held: 857.2px; }
+  [data-lang="en"] > [aria-labelledby="report-title"] { --held: 900.9px; }
+  [data-lang="en"] > #cene { --held: 1104.1px; }
+  [data-lang="en"] > #radovi { --held: 907.4px; }
+  [data-lang="en"] > [aria-labelledby="plan-title"] { --held: 1361.4px; }
+  [data-lang="en"] > [aria-labelledby="process-title"] { --held: 999.7px; }
+  [data-lang="en"] > #pitanja { --held: 635.7px; }
+  [data-lang="en"] > #teren { --held: 1162.8px; }
+  [data-lang="en"] > #kontakt { --held: 892.4px; }
+  [data-lang="en"] ~ footer { --held: 759.9px; }
+}
+@media (min-width: 767px) and (max-width: 767px) {
+  [data-lang="en"] > #usluge { --held: 1096.2px; }
+  [data-lang="en"] > #utisci { --held: 829.8px; }
+  [data-lang="en"] > #kvar { --held: 857.5px; }
+  [data-lang="en"] > [aria-labelledby="report-title"] { --held: 901.2px; }
+  [data-lang="en"] > #cene { --held: 1105.1px; }
+  [data-lang="en"] > #radovi { --held: 914.2px; }
+  [data-lang="en"] > [aria-labelledby="plan-title"] { --held: 1361.7px; }
+  [data-lang="en"] > [aria-labelledby="process-title"] { --held: 1000px; }
+  [data-lang="en"] > #pitanja { --held: 636px; }
+  [data-lang="en"] > #teren { --held: 1168px; }
+  [data-lang="en"] > #kontakt { --held: 892.8px; }
+  [data-lang="en"] ~ footer { --held: 762.5px; }
 }

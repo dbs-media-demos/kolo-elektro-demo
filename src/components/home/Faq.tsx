@@ -4,6 +4,7 @@ import { useBiz } from "@/components/preview/BizContext";
 import { Reveal } from "@/components/ui/Reveal";
 import { faq } from "@/content/offer";
 import { useT } from "@/lib/i18n";
+import { Fuse } from "@/components/ui/Fuse";
 
 /** Every question has its own wall switch: open one and the rocker clicks over and its pilot light comes on. */
 export function Faq() {
@@ -13,9 +14,7 @@ export function Faq() {
     <section id="pitanja" aria-labelledby="faq-title" className="sec-bone relative px-[var(--gutter)] py-24 md:py-36">
       <div className="grid gap-10 lg:grid-cols-12">
         <Reveal className="lg:sticky lg:top-28 lg:col-span-4 lg:self-start">
-          <p className="fuse">
-            <b>F9</b> {t("Questions")}
-          </p>
+          <Fuse n={9}>{t("Questions")}</Fuse>
           <h2 id="faq-title" className="t-display t-lg mt-5">
             {t("What people ask")} <span className="quiet">{t("before they call.")}</span>
           </h2>

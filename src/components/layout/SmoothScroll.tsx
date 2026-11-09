@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import type Lenis from "lenis";
-import { gsap, ScrollTrigger, prefersReducedMotion } from "@/lib/gsap";
+import { loadGsap, prefersReducedMotion } from "@/lib/motion";
 
 declare global {
   interface Window {
@@ -11,17 +11,18 @@ declare global {
   }
 }
 
+/** Phones/tablets keep native momentum scrolling (better feel, zero cost) and never download Lenis or GSAP. */
+const smooth = () => !prefersReducedMotion() && !window.matchMedia("(hover: none), (pointer: coarse)").matches;
+
 /** Lenis smooth scrolling, driven by GSAP's ticker so ScrollTrigger stays in sync. */
 export function SmoothScroll() {
   const pathname = usePathname();
 
   useEffect(() => {
-    // Phones/tablets keep native momentum scrolling (better feel, zero cost), so
-    // Lenis is only downloaded on desktop.
-    if (prefersReducedMotion() || window.matchMedia("(hover: none), (pointer: coarse)").matches) return;
+    if (!smooth()) return;
     let cleanup: (() => void) | undefined;
     let alive = true;
-    import("lenis").then(({ default: Lenis }) => {
+    Promise.all([import("lenis"), loadGsap()]).then(([{ default: Lenis }, { gsap, ScrollTrigger }]) => {
       if (!alive) return;
       const lenis = new Lenis({ lerp: 0.1, wheelMultiplier: 1, touchMultiplier: 1.4, anchors: { offset: -80 } });
       window.__lenis = lenis;
@@ -44,9 +45,10 @@ export function SmoothScroll() {
   // New page: Next.js handles scroll position (top on navigation, restored on Back);
   // re-measure every trigger once the new layout settles.
   useEffect(() => {
+    if (!smooth()) return;
     window.__lenis?.resize();
     // Fonts and images settle after the first paint; measure again once they have.
-    const ids = [350, 2400].map((t) => window.setTimeout(() => ScrollTrigger.refresh(), t));
+    const ids = [350, 2400].map((t) => window.setTimeout(() => void loadGsap().then(({ ScrollTrigger }) => ScrollTrigger.refresh()), t));
     return () => ids.forEach((id) => window.clearTimeout(id));
   }, [pathname]);
 

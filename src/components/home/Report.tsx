@@ -7,6 +7,7 @@ import { useArrive } from "@/components/ui/useArrive";
 import { readings } from "@/content/offer";
 import { marketOf } from "@/lib/biz";
 import { useT } from "@/lib/i18n";
+import { Fuse } from "@/components/ui/Fuse";
 
 /**
  * The thing nobody else hands over: a signed test report. The sheet fills in reading by reading as
@@ -22,9 +23,7 @@ export function Report() {
     <section aria-labelledby="report-title" className="sec-bone relative overflow-hidden px-[var(--gutter)] py-24 md:py-36">
       <div className="grid grid-cols-1 items-center gap-14 lg:grid-cols-12">
         <Reveal className="lg:col-span-5">
-          <p className="fuse">
-            <b>F7</b> {t("Proof")}
-          </p>
+          <Fuse n={7} phone={4}>{t("Proof")}</Fuse>
           <h2 id="report-title" className="t-display t-lg mt-5">
             {t("Measured,")} <span className="quiet">{t("not guessed.")}</span>
           </h2>

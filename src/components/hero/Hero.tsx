@@ -10,12 +10,10 @@ import { useBiz } from "@/components/preview/BizContext";
 import { PhoneIcon } from "@/components/layout/MobileBar";
 import { OpenBadge } from "@/components/ui/OpenBadge";
 import { num, telOf } from "@/lib/biz-core";
-import { ScrollTrigger, prefersReducedMotion } from "@/lib/gsap";
+import { BIG_SCREEN, loadGsap, prefersReducedMotion } from "@/lib/motion";
 import { useT } from "@/lib/i18n";
 import type { PanelScene } from "./panelScene";
 
-/** Only a big screen with a mouse ever imports panelScene (and with it three.js). */
-const BIG_SCREEN = "(min-width: 1024px) and (hover: hover) and (pointer: fine)";
 /** Set when the board ran too slowly: the rest of the visit keeps the stills. */
 const SLOW_KEY = "kolo-3d";
 
@@ -88,25 +86,32 @@ export function Hero() {
 
     // Where the hero is a tall scroll flight (big screen, motion allowed), the copy leaves with the scroll
     let onScroll = (p: number) => void p;
-    const st =
-      big && !prefersReducedMotion()
-        ? ScrollTrigger.create({
-            trigger: sec,
-            start: "top top",
-            end: "bottom bottom",
-            onUpdate: (self) => {
-              const p = self.progress;
-              if (copy.current) {
-                const a = Math.max(0, 1 - p / 0.42);
-                copy.current.style.opacity = String(a);
-                copy.current.style.transform = `translateY(${-p * 70}px)`;
-                copy.current.style.pointerEvents = a < 0.2 ? "none" : "";
-              }
-              if (fade.current) fade.current.style.opacity = String(Math.max(0, (p - 0.72) / 0.28));
-              onScroll(p);
-            },
-          })
-        : null;
+    let st: { kill: () => void } | null = null;
+    let stWanted = big && !prefersReducedMotion();
+    const killSt = () => {
+      stWanted = false;
+      st?.kill();
+    };
+    if (stWanted)
+      void loadGsap().then(({ ScrollTrigger }) => {
+        if (!stWanted) return;
+        st = ScrollTrigger.create({
+          trigger: sec,
+          start: "top top",
+          end: "bottom bottom",
+          onUpdate: (self) => {
+            const p = self.progress;
+            if (copy.current) {
+              const a = Math.max(0, 1 - p / 0.42);
+              copy.current.style.opacity = String(a);
+              copy.current.style.transform = `translateY(${-p * 70}px)`;
+              copy.current.style.pointerEvents = a < 0.2 ? "none" : "";
+            }
+            if (fade.current) fade.current.style.opacity = String(Math.max(0, (p - 0.72) / 0.28));
+            onScroll(p);
+          },
+        });
+      });
 
     // The graphics chip is only asked about on a big screen that may run the board, once the page is idle
     if (!big || (!still && (prefersReducedMotion() || conn?.saveData || remembered()))) {
@@ -117,7 +122,7 @@ export function Hero() {
       };
       if (big || prefersReducedMotion()) {
         on();
-        return () => st?.kill();
+        return killSt;
       }
       let id = 0;
       const later = () => (id = window.setTimeout(on, 700));
@@ -259,7 +264,7 @@ export function Hero() {
       window.removeEventListener("load", later);
       document.removeEventListener("visibilitychange", gate);
       if (idle) window.cancelIdleCallback?.(idle);
-      st?.kill();
+      killSt();
       detach();
       release.current();
       release.current = () => {};
@@ -292,7 +297,7 @@ export function Hero() {
 
   return (
     <section ref={section} id="top" aria-labelledby="hero-title" className="hero sec-night relative">
-      <div data-stage className="sticky top-0 isolate h-[100svh] overflow-hidden">
+      <div data-stage className="sticky top-0 isolate h-[100svh] overflow-hidden max-[899px]:h-full">
         <div className="hero-still" aria-hidden={mode === "live"}>
           <picture>
             <source media="(min-width: 900px)" srcSet={dimW} sizes="100vw" />
@@ -313,7 +318,7 @@ export function Hero() {
         <canvas ref={canvas} className="hero-canvas" aria-hidden />
         <div className="hero-scrim" aria-hidden />
 
-        <div ref={copy} className="relative flex h-full flex-col justify-end px-[var(--gutter)] pb-[5.2rem] pt-24 min-[900px]:justify-center min-[900px]:pb-14">
+        <div ref={copy} className="relative flex h-full flex-col justify-end px-[var(--gutter)] pb-7 pt-24 min-[900px]:justify-center min-[900px]:pb-14">
           <div className="hero-copy relative max-w-[46rem] min-[900px]:max-w-[52%]">
             <p className="anim-fade flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[0.78rem] font-medium uppercase tracking-[0.1em] md:text-[0.86rem]" style={{ "--d": "0.1s" } as CSSProperties}>
               <span className="text-spark">{t("Electrician")}</span>
@@ -348,11 +353,13 @@ export function Hero() {
                   <span className="tabular-nums">{biz.phoneDisplay}</span>
                 </a>
               )}
-              <a href="#kontakt" className={biz.phone ? "btn btn-ghost" : "btn btn-spark"}>
+              {/* Very short phones drop this one: the call bar right below has the same button */}
+              <a href="#kontakt" className={biz.phone ? "btn btn-ghost max-[899px]:[@media(max-height:600px)]:hidden" : "btn btn-spark"}>
                 {t("Get a free quote")}
               </a>
             </div>
-            <div className="anim-fade mt-6 hidden flex-wrap items-center gap-x-8 gap-y-2 text-sm [@media(min-height:740px)]:flex" style={{ "--d": "0.8s" } as CSSProperties}>
+            {/* Phones always show the rating on the first screen; short ones drop the open badge */}
+            <div className="anim-fade mt-5 hidden flex-wrap items-center gap-x-8 gap-y-2 text-sm max-[899px]:flex min-[900px]:mt-6 [@media(min-height:740px)]:flex" style={{ "--d": "0.8s" } as CSSProperties}>
               {biz.rating && (
                 <p className="flex items-center gap-2">
                   <span className="text-spark" aria-hidden>
@@ -363,7 +370,7 @@ export function Hero() {
                   </span>
                 </p>
               )}
-              <OpenBadge className="quiet" always={t("Emergency callouts 24/7")} />
+              <OpenBadge className="quiet max-[899px]:[@media(max-height:739px)]:hidden" always={t("Emergency callouts 24/7")} />
             </div>
           </div>
         </div>

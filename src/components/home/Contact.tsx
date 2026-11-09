@@ -8,6 +8,7 @@ import { Reveal } from "@/components/ui/Reveal";
 import { services } from "@/content/offer";
 import { telOf } from "@/lib/biz-core";
 import { useT } from "@/lib/i18n";
+import { Fuse } from "@/components/ui/Fuse";
 
 /**
  * Closing the circuit: the whole brand in one form. An open knife switch sits above the fields;
@@ -40,9 +41,7 @@ export function Contact() {
     <section id="kontakt" aria-labelledby="contact-title" className="sec-night relative border-t border-white/10 px-[var(--gutter)] py-24 md:py-36">
       <div className="grid gap-12 lg:grid-cols-12">
         <Reveal className="lg:col-span-5">
-          <p className="fuse">
-            <b>F11</b> {t("Contact")}
-          </p>
+          <Fuse n={11}>{t("Contact")}</Fuse>
           <h2 id="contact-title" className="t-display t-xl mt-5">
             {t("Close the circuit.")}
           </h2>

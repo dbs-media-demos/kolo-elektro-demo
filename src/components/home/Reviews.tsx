@@ -7,6 +7,7 @@ import { useArrive } from "@/components/ui/useArrive";
 import { reviews } from "@/content/offer";
 import { num } from "@/lib/biz-core";
 import { useT } from "@/lib/i18n";
+import { Fuse } from "@/components/ui/Fuse";
 
 const STRING = "M0 6 Q 200 92 400 34 Q 600 -24 800 34 Q 1000 92 1200 6";
 /** Height of the string at x, so every bulb hangs exactly on it. */
@@ -50,9 +51,7 @@ export function Reviews() {
         <div className="px-[var(--gutter)]">
           <Reveal className="mt-8 grid items-end gap-6 md:mt-10 md:grid-cols-12">
             <div className="md:col-span-7">
-              <p className="fuse">
-                <b>F8</b> {t("Reviews")}
-              </p>
+              <Fuse n={8} phone={2}>{t("Reviews")}</Fuse>
               <h2 id="reviews-title" className="t-display t-lg mt-5">
                 {t("Word gets around")} <span className="quiet">{t("the building.")}</span>
               </h2>

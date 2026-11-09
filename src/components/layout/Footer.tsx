@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { LogoMark } from "@/components/brand/Logo";
 import { useBiz } from "@/components/preview/BizContext";
 import { telOf } from "@/lib/biz-core";
-import { prefersReducedMotion } from "@/lib/gsap";
+import { prefersReducedMotion } from "@/lib/motion";
 import { useT } from "@/lib/i18n";
 import { agencyName, agencyUrl, site } from "@/lib/site";
 import { NAV } from "./nav";
@@ -49,8 +49,10 @@ export function Footer() {
               )}
               {!biz.preview && (
                 <li>
-                  <a href={`mailto:${site.email}`} className="break-all hover:text-spark">
-                    {site.email}
+                  {/* A narrow column breaks the address after the @, never inside a word */}
+                  <a href={`mailto:${site.email}`} className="break-words hover:text-spark">
+                    {site.email.split("@")[0]}@<wbr />
+                    {site.email.split("@")[1]}
                   </a>
                 </li>
               )}

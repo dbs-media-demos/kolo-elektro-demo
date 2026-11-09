@@ -7,9 +7,10 @@ import { Breaker } from "@/components/ui/Breaker";
 import { Reveal } from "@/components/ui/Reveal";
 import { services } from "@/content/offer";
 import { marketOf } from "@/lib/biz";
-import { prefersReducedMotion } from "@/lib/gsap";
+import { prefersReducedMotion } from "@/lib/motion";
 import { useT } from "@/lib/i18n";
 import { Arrow } from "@/components/hero/Hero";
+import { Fuse } from "@/components/ui/Fuse";
 
 /**
  * The services are the panel directory: eight labelled circuits. Scrolling in, the breakers close
@@ -61,9 +62,7 @@ export function Services() {
     <section id="usluge" aria-labelledby="services-title" className="sec-bone relative px-[var(--gutter)] py-24 md:py-36">
       <div className="grid gap-12 lg:grid-cols-12 lg:gap-8">
         <Reveal className="lg:sticky lg:top-28 lg:col-span-4 lg:self-start">
-          <p className="fuse">
-            <b>F2</b> {t("Services")}
-          </p>
+          <Fuse n={2} phone={1}>{t("Services")}</Fuse>
           <h2 id="services-title" className="t-display t-lg mt-5">
             {t("Eight circuits.")} <span className="quiet">{t("One number to call.")}</span>
           </h2>
@@ -72,7 +71,7 @@ export function Services() {
         </Reveal>
 
         <Reveal className="lg:col-span-8">
-          <div ref={panel} className="tabla p-2 sm:p-3">
+          <div ref={panel} className="tabla p-2 sm:p-3" data-touched={touched || undefined}>
             <ul>
               {list.map((s, i) => {
                 const isOpen = open === i;

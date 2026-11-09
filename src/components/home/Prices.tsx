@@ -6,6 +6,7 @@ import { Reveal } from "@/components/ui/Reveal";
 import { estimator, group, priceList } from "@/content/offer";
 import { marketOf } from "@/lib/biz";
 import { useT } from "@/lib/i18n";
+import { Fuse } from "@/components/ui/Fuse";
 
 const DRUMS = 7;
 
@@ -38,9 +39,7 @@ export function Prices() {
   return (
     <section id="cene" aria-labelledby="prices-title" className="sec-bone relative px-[var(--gutter)] py-24 md:py-36">
       <Reveal>
-        <p className="fuse">
-          <b>F4</b> {t("Prices")}
-        </p>
+        <Fuse n={4} phone={5}>{t("Prices")}</Fuse>
         <h2 id="prices-title" className="t-display t-lg mt-5 max-w-4xl">
           {t("The number on the quote")} <span className="quiet">{t("is the number on the invoice.")}</span>
         </h2>

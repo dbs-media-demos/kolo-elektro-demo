@@ -9,7 +9,7 @@ export function MobileBar() {
   const biz = useBiz();
   const t = useT();
   return (
-    <div className="fixed inset-x-0 bottom-0 z-[65] grid grid-cols-2 gap-2 border-t border-white/10 bg-night/85 p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] text-bone backdrop-blur-xl md:hidden">
+    <div className="fixed inset-x-0 bottom-0 z-[65] grid grid-cols-2 gap-2 border-t border-white/10 bg-night p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] text-bone md:hidden">
       {biz.phone ? (
         <a href={telOf(biz)} className="btn btn-ghost min-h-12 w-full">
           <PhoneIcon />

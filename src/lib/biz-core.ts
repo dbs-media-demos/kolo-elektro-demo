@@ -80,7 +80,23 @@ const toMin = (t: string) => Number(t.slice(0, 2)) * 60 + Number(t.slice(3, 5));
 // Building a formatter is the slow part, so each timezone gets one
 const clocks = new Map<string, Intl.DateTimeFormat>();
 
+/** Zones on Central European Time with EU summer time: worked out without Intl, which takes ~50 ms to start on a phone. */
+const CET = new Set(["Europe/Belgrade", "Europe/Zagreb", "Europe/Sarajevo", "Europe/Ljubljana", "Europe/Podgorica", "Europe/Skopje", "Europe/Budapest", "Europe/Vienna", "Europe/Berlin"]);
+
+function cetNow(date: Date) {
+  const y = date.getUTCFullYear();
+  // Summer time runs from 01:00 UTC on the last Sunday of March to 01:00 UTC on the last Sunday of October
+  const lastSunday = (month: number) => {
+    const end = new Date(Date.UTC(y, month + 1, 0));
+    return Date.UTC(y, month, end.getUTCDate() - end.getUTCDay(), 1);
+  };
+  const t = date.getTime();
+  const local = new Date(t + (t >= lastSunday(2) && t < lastSunday(9) ? 2 : 1) * 3_600_000);
+  return { day: local.getUTCDay(), minutes: local.getUTCHours() * 60 + local.getUTCMinutes() };
+}
+
 function nowIn(timeZone: string, date = new Date()) {
+  if (CET.has(timeZone)) return cetNow(date);
   let clock = clocks.get(timeZone);
   if (!clock) clocks.set(timeZone, (clock = new Intl.DateTimeFormat("en-US", { timeZone, weekday: "short", hour: "2-digit", minute: "2-digit", hourCycle: "h23" })));
   const parts = clock.formatToParts(date);

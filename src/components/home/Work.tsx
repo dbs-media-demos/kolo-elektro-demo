@@ -7,10 +7,14 @@ import { useBiz } from "@/components/preview/BizContext";
 import { Breaker } from "@/components/ui/Breaker";
 import { Reveal } from "@/components/ui/Reveal";
 import { jobs, type Job } from "@/content/offer";
-import { ScrollTrigger, gsap, prefersReducedMotion } from "@/lib/gsap";
+import { loadGsap, prefersReducedMotion, scrollScenes } from "@/lib/motion";
 import { useT } from "@/lib/i18n";
+import { Fuse } from "@/components/ui/Fuse";
 
-/** Finished jobs arrive dark and strike on like old tubes as you reach them. Each has its own switch. */
+/**
+ * Finished jobs arrive dark and strike on like old tubes as you reach them, drifting with the scroll.
+ * Each has its own switch. Phones and tablets get the photos lit and still, with the switch.
+ */
 export function Work() {
   const biz = useBiz();
   const t = useT();
@@ -18,18 +22,17 @@ export function Work() {
   return (
     <section id="radovi" aria-labelledby="work-title" className="sec-night relative overflow-hidden px-[var(--gutter)] pb-24 pt-8 md:pb-36">
       <Reveal>
-        <p className="fuse">
-          <b>F6</b> {t("Work")}
-        </p>
+        <Fuse n={6}>{t("Work")}</Fuse>
         <h2 id="work-title" className="t-display t-lg mt-5 max-w-3xl">
           {t("Judge us by the first night")} <span className="quiet">{t("the lights come on.")}</span>
         </h2>
       </Reveal>
 
-      <div className="mt-12 grid gap-y-14 md:mt-20 md:grid-cols-12 md:gap-x-8 md:gap-y-24">
-        <Shot job={list[0]} showPlace={!biz.preview} className="md:col-span-8" ratio="aspect-[4/3] md:aspect-[16/10]" sizes="(min-width: 768px) 66vw, 100vw" parallax={-5} />
-        <Shot job={list[1]} showPlace={!biz.preview} className="md:col-span-4 md:mt-40" ratio="aspect-[4/5]" sizes="(min-width: 768px) 33vw, 100vw" parallax={7} />
-        <Shot job={list[2]} showPlace={!biz.preview} className="md:col-span-6 md:col-start-4" ratio="aspect-[5/6] md:aspect-[4/3]" sizes="(min-width: 768px) 50vw, 100vw" parallax={-4} />
+      {/* Phones: a row you swipe, the next job peeking in; from md up, the staggered grid */}
+      <div className="-mx-[var(--gutter)] mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-px-[var(--gutter)] px-[var(--gutter)] [scrollbar-width:none] md:mx-0 md:mt-20 md:grid md:snap-none md:grid-cols-12 md:gap-x-8 md:gap-y-24 md:overflow-visible md:px-0">
+        <Shot job={list[0]} showPlace={!biz.preview} className="md:col-span-8" ratio="aspect-[4/5] md:aspect-[16/10]" sizes="(min-width: 768px) 66vw, 74vw" parallax={-5} />
+        <Shot job={list[1]} showPlace={!biz.preview} className="md:col-span-4 md:mt-40" ratio="aspect-[4/5]" sizes="(min-width: 768px) 33vw, 74vw" parallax={7} />
+        <Shot job={list[2]} showPlace={!biz.preview} className="md:col-span-6 md:col-start-4" ratio="aspect-[4/5] md:aspect-[4/3]" sizes="(min-width: 768px) 50vw, 74vw" parallax={-4} />
       </div>
     </section>
   );
@@ -44,15 +47,20 @@ function Shot({ job, showPlace, className, ratio, sizes, parallax }: { job: Job;
 
   useEffect(() => {
     const el = ref.current;
-    if (!el || prefersReducedMotion()) return;
-    const st = ScrollTrigger.create({
-      trigger: el,
-      start: "top bottom",
-      end: "bottom top",
-      scrub: true,
-      onUpdate: (s) => {
-        if (img.current) gsap.set(img.current, { yPercent: (s.progress - 0.5) * parallax });
-      },
+    if (!el || !scrollScenes()) return;
+    let st: { kill: () => void } | undefined;
+    let alive = true;
+    void loadGsap().then(({ gsap, ScrollTrigger }) => {
+      if (!alive) return;
+      st = ScrollTrigger.create({
+        trigger: el,
+        start: "top bottom",
+        end: "bottom top",
+        scrub: true,
+        onUpdate: (s) => {
+          if (img.current) gsap.set(img.current, { yPercent: (s.progress - 0.5) * parallax });
+        },
+      });
     });
     let io: IntersectionObserver | undefined;
     if (el.getBoundingClientRect().top > window.innerHeight * 0.75) {
@@ -69,7 +77,8 @@ function Shot({ job, showPlace, className, ratio, sizes, parallax }: { job: Job;
       io.observe(el);
     }
     return () => {
-      st.kill();
+      alive = false;
+      st?.kill();
       io?.disconnect();
     };
   }, [parallax]);
@@ -80,9 +89,9 @@ function Shot({ job, showPlace, className, ratio, sizes, parallax }: { job: Job;
   };
 
   return (
-    <figure className={className}>
+    <figure className={clsx("max-md:w-[74vw] max-md:shrink-0 max-md:snap-start", className)}>
       <div ref={ref} className={clsx("lit rounded-xl shadow-[0_50px_90px_-50px_rgba(255,178,36,0.35),0_30px_60px_-30px_#000]", ratio)} data-on={on} data-strike={strike}>
-        <div ref={img} className="absolute inset-[-6%_0]">
+        <div ref={img} className="absolute inset-0 pin:inset-[-6%_0]">
           <Image src={job.photo} alt={job.alt} fill sizes={sizes} quality={75} className="object-cover" />
         </div>
         <span className="lit-dark" key={String(on)} />

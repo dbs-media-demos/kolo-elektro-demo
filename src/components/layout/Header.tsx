@@ -9,7 +9,10 @@ import { telOf } from "@/lib/biz-core";
 import { useT } from "@/lib/i18n";
 import { NAV } from "./nav";
 
-/** Transparent over the hero, smoked glass once the page scrolls. Phones get a full-screen menu. */
+/**
+ * Solid night, so nothing shows through. On a big screen it stays transparent over the 3D board until the
+ * page scrolls. Phones get a full-screen menu.
+ */
 export function Header() {
   const biz = useBiz();
   const t = useT();
@@ -38,8 +41,8 @@ export function Header() {
   return (
     <header
       className={clsx(
-        "fixed inset-x-0 top-0 z-[70] border-b text-bone transition-[background-color,backdrop-filter,border-color] duration-500",
-        scrolled || open ? "border-white/10 bg-night/75 backdrop-blur-xl" : "border-transparent",
+        "fixed inset-x-0 top-0 z-[70] border-b text-bone transition-[background-color,border-color] duration-500",
+        scrolled || open ? "border-white/10 bg-night" : "border-white/10 bg-night lg:border-transparent lg:bg-transparent",
       )}
     >
       <div className="flex h-[var(--header-h)] items-center justify-between gap-4 px-[var(--gutter)]">

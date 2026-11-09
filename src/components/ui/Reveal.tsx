@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, type CSSProperties, type ElementType, type ReactNode } from "react";
-import { prefersReducedMotion } from "@/lib/gsap";
+import { prefersReducedMotion } from "@/lib/motion";
 
 /**
  * Fades and lifts its content in as it scrolls into view. Content is visible by default: the

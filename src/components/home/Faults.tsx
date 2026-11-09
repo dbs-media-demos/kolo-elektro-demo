@@ -7,8 +7,9 @@ import { PhoneIcon } from "@/components/layout/MobileBar";
 import { faults, type WaveShape } from "@/content/offer";
 import { marketOf } from "@/lib/biz";
 import { telOf } from "@/lib/biz-core";
-import { prefersReducedMotion } from "@/lib/gsap";
+import { prefersReducedMotion } from "@/lib/motion";
 import { useT } from "@/lib/i18n";
+import { Fuse } from "@/components/ui/Fuse";
 
 /**
  * "What's your home doing?" Pick a symptom and a live oscilloscope trace across the section takes
@@ -33,9 +34,7 @@ export function Faults() {
   return (
     <section id="kvar" aria-labelledby="faults-title" className="sec-night relative overflow-hidden py-24 md:py-36">
       <div className="px-[var(--gutter)]">
-        <p className="fuse">
-          <b>F3</b> {t("Faults")}
-        </p>
+        <Fuse n={3}>{t("Faults")}</Fuse>
         <h2 id="faults-title" className="t-display t-lg mt-5 max-w-4xl">
           {t("What is your home doing right now?")}
         </h2>
