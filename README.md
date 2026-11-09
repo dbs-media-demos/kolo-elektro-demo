@@ -43,7 +43,7 @@ npm run build && npm start
 
 three.js loads on idle, after the page has painted, over a still of the same board, and only on a big screen with a mouse. A slow machine fades back to the still for the rest of the visit. The scene stops drawing off-screen. Reduced motion, Save-Data or no WebGL get a still of the lit board, no pinning, and every section in its finished state.
 
-Phones and tablets never download three.js, GSAP or Lenis. They get stills rendered from the desktop scene, the plan stacked (finished plan, the four days, the totals), work photos as a swipe row with no parallax, two subset font files (`public/fonts`, `scripts/phone-fonts.py`) and the emergency-trade section order (hero, services, reviews, faults, proof, prices, work, plan, how it goes, FAQ, area, contact) via CSS `order`, with fuse numbers to match (`Fuse.tsx`).
+Phones and tablets never download three.js, GSAP or Lenis. They get stills rendered from the desktop scene, the plan stacked (finished plan, the four days, the totals), work photos as a swipe row with a light CSS-only parallax (scroll-driven `animation-timeline`, no JavaScript; still without support or under reduced motion), two subset font files (`public/fonts`, `scripts/phone-fonts.py`) and the emergency-trade section order (hero, services, reviews, faults, proof, prices, work, plan, how it goes, FAQ, area, contact) via CSS `order`, with fuse numbers to match (`Fuse.tsx`).
 
 ## Scripts
 

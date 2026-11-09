@@ -823,6 +823,34 @@ body {
     animation: strike 1.15s steps(1) both;
   }
 
+  /* Phones and tablets: the photos drift a little as the row passes, run by the browser's compositor
+     (no JavaScript, no scroll listeners). The section names the timeline: the photos sit inside the sideways
+     swipe row and the section's own overflow box, so their own view() would follow those instead of the page. The photo is 12% taller
+     than its frame and moves 10% of its height, so no edge shows. A big screen with a mouse keeps GSAP's
+     parallax (Work.tsx); no support or reduced motion leaves the photos still. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      @media not all and (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+        .work-drift {
+          view-timeline: --work block;
+        }
+        .lit-drift {
+          animation: lit-drift linear both;
+          animation-timeline: --work;
+          animation-range: cover;
+        }
+      }
+    }
+  }
+  @keyframes lit-drift {
+    from {
+      transform: translateY(-5%);
+    }
+    to {
+      transform: translateY(5%);
+    }
+  }
+
   /* ───────────────────────── report ───────────────────────── */
 
   .sheet {
