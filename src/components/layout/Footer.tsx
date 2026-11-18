@@ -3,7 +3,8 @@
 import { useEffect, useRef } from "react";
 import { LogoMark } from "@/components/brand/Logo";
 import { useBiz } from "@/components/preview/BizContext";
-import { telOf } from "@/lib/biz-core";
+import { inlineLogo } from "@/lib/logo";
+import { areasOf, telOf } from "@/lib/biz-core";
 import { prefersReducedMotion } from "@/lib/motion";
 import { useT } from "@/lib/i18n";
 import { agencyName, agencyUrl, site } from "@/lib/site";
@@ -17,10 +18,16 @@ export function Footer() {
     <footer className="sec-night relative overflow-hidden border-t border-white/10 px-[var(--gutter)] pb-28 pt-20 md:pb-10">
       <div className="grid gap-12 md:grid-cols-12">
         <div className="md:col-span-5">
-          <p className="flex items-center gap-3" data-no-translate>
-            <LogoMark className="h-10 w-10" />
-            <span className="font-display text-2xl font-medium tracking-tight">{biz.name}</span>
-          </p>
+          {biz.logo ? (
+            <p className="flex" data-no-translate>
+              <span role="img" aria-label={biz.name} className="biz-logo h-12 max-w-[20rem] max-md:h-10" dangerouslySetInnerHTML={{ __html: inlineLogo(biz.logo.svg) }} />
+            </p>
+          ) : (
+            <p className="flex items-center gap-3" data-no-translate>
+              <LogoMark className="h-10 w-10" />
+              <span className="font-display text-2xl font-medium tracking-tight">{biz.name}</span>
+            </p>
+          )}
           <p className="quiet mt-5 max-w-sm">{t("Faults, rewiring, panels and lighting. We say when, we say how much, and then we do exactly that.")}</p>
         </div>
         <div className="grid grid-cols-2 gap-8 text-sm sm:grid-cols-3 md:col-span-7">
@@ -35,6 +42,14 @@ export function Footer() {
               <p className="quiet mt-2" data-no-translate>
                 {biz.hoursSummary}
               </p>
+            )}
+            {biz.preview && biz.areas.length > 0 && (
+              <>
+                <p className="t-label quiet mt-6">{t("Areas we cover")}</p>
+                <p className="mt-3 leading-relaxed" data-no-translate>
+                  {areasOf(biz).join(" · ")}
+                </p>
+              </>
             )}
           </div>
           <div>

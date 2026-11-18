@@ -11,6 +11,7 @@ import { PhoneIcon } from "@/components/layout/MobileBar";
 import { OpenBadge } from "@/components/ui/OpenBadge";
 import { num, telOf } from "@/lib/biz-core";
 import { BIG_SCREEN, loadGsap, prefersReducedMotion } from "@/lib/motion";
+import { whenLoaderDone } from "@/lib/loader";
 import { useT } from "@/lib/i18n";
 import type { PanelScene } from "./panelScene";
 import { HeroLamp } from "./HeroLamp";
@@ -108,6 +109,9 @@ export function Hero({ variant = "3d" }: { variant?: "3d" | "v2" }) {
     setPower((p) => !(p ?? true));
   };
 
+  // A preview's circuit directory card carries the lead's name, not the concept's
+  const boardLabel = biz.preview ? biz.shortName.toUpperCase() : undefined;
+
   useEffect(() => {
     const cv = canvas.current;
     const sec = section.current;
@@ -156,13 +160,18 @@ export function Hero({ variant = "3d" }: { variant?: "3d" | "v2" }) {
     // The graphics chip is only asked about on a big screen that may run the board, once the page is idle
     if (v2 || !big || (!still && (prefersReducedMotion() || conn?.saveData || remembered()))) {
       // No scene: the lit still with a main switch. Phones see the dark board first, then the power-up.
+      // The lit still is fetched at once; the lights come on in view, once a lead's logo loader has gone
+      let unwait = () => {};
       const on = () => {
         setMode("still");
-        setPower(true);
+        unwait = whenLoaderDone(() => setPower(true));
       };
       if (big || prefersReducedMotion()) {
         on();
-        return killSt;
+        return () => {
+          killSt();
+          unwait();
+        };
       }
       let id = 0;
       const later = () => (id = window.setTimeout(on, 700));
@@ -171,6 +180,7 @@ export function Hero({ variant = "3d" }: { variant?: "3d" | "v2" }) {
       return () => {
         window.removeEventListener("load", later);
         window.clearTimeout(id);
+        unwait();
       };
     }
 
@@ -231,6 +241,7 @@ export function Hero({ variant = "3d" }: { variant?: "3d" | "v2" }) {
           },
           onPower: setPower,
           onSlow: () => giveUp("slow"),
+          label: boardLabel,
         });
       } catch {
         // No WebGL context after all, or it failed to build: the still stays
@@ -307,7 +318,7 @@ export function Hero({ variant = "3d" }: { variant?: "3d" | "v2" }) {
       release.current();
       release.current = () => {};
     };
-  }, [v2]);
+  }, [v2, boardLabel]);
 
   // Handing back: once the still under the canvas is in place, the canvas fades out and the renderer is freed
   useEffect(() => {

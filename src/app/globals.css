@@ -1467,3 +1467,224 @@ body {
     padding-bottom: 4.5rem;
   }
 }
+/* ---------- The lead's own logo: page loader (components/preview/LogoLoader) + header/footer ---------- */
+/* Set per demo: --loader-bg, --loader-ink, --logo-font (the display font next/font registered). */
+.biz-logo {
+  display: inline-flex;
+  align-items: center;
+  line-height: 0;
+}
+.biz-logo .biz-logo__svg {
+  display: block;
+  height: 100%;
+  width: auto;
+  max-width: 100%;
+  overflow: visible;
+}
+/* The CRM's logo names the font as people know it ("Archivo"); the page has it under next/font's name */
+.biz-logo [data-part="word"] text,
+.biz-loader [data-part="word"] text {
+  font-family: var(--logo-font);
+}
+
+.biz-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000;
+  display: grid;
+  place-items: center;
+  background: var(--loader-bg);
+  color: var(--loader-ink);
+  /* Without JavaScript it still goes */
+  animation: biz-loader-failsafe 0.4s ease 2.8s forwards;
+}
+html[data-loader="off"] .biz-loader {
+  display: none;
+}
+.biz-loader__logo {
+  width: min(64vw, 520px);
+}
+@media (max-width: 767.98px) {
+  .biz-loader__logo {
+    width: 78vw;
+  }
+}
+.biz-loader__logo .biz-logo__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+/* 1. The mark's outlines draw, staggered; 2. their fills come in; 3. the word slides out of a mask */
+.biz-loader [data-part="mark"] [pathLength] {
+  animation:
+    biz-draw 0.72s cubic-bezier(0.65, 0, 0.35, 1) calc(0.1s + var(--i, 0) * (0.34s / var(--n, 1))) both,
+    biz-fill 0.45s ease-out calc(0.7s + var(--i, 0) * (0.16s / var(--n, 1))) both;
+}
+.biz-loader [data-part="word"] {
+  transform-box: fill-box;
+  animation: biz-word 0.72s cubic-bezier(0.16, 1, 0.3, 1) 0.58s both;
+}
+@keyframes biz-draw {
+  0% {
+    stroke-dasharray: 1 1;
+    stroke-dashoffset: 1;
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  99.9% {
+    stroke-dasharray: 1 1;
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+@keyframes biz-fill {
+  from {
+    fill-opacity: 0;
+  }
+}
+@keyframes biz-word {
+  from {
+    clip-path: inset(-25% 100% -25% 0);
+    transform: translateX(-3%);
+  }
+  to {
+    clip-path: inset(-25% -4% -25% -4%);
+    transform: none;
+  }
+}
+@keyframes biz-loader-failsafe {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+/* The exit (data-exit): the curtain lifts, wipes up, or fades; the logo leaves a beat ahead of it */
+html[data-loader="exit"] .biz-loader {
+  pointer-events: none;
+  animation: none;
+}
+.biz-loader[data-exit="lift"] {
+  transition: transform 0.7s cubic-bezier(0.76, 0, 0.24, 1);
+}
+html[data-loader="exit"] .biz-loader[data-exit="lift"] {
+  transform: translateY(-100%);
+}
+.biz-loader[data-exit="wipe"] {
+  clip-path: inset(0 0 0 0);
+  transition: clip-path 0.7s cubic-bezier(0.76, 0, 0.24, 1);
+}
+html[data-loader="exit"] .biz-loader[data-exit="wipe"] {
+  clip-path: inset(0 0 100% 0);
+}
+.biz-loader[data-exit="fade"] {
+  transition:
+    opacity 0.6s ease,
+    visibility 0s linear 0.6s;
+}
+html[data-loader="exit"] .biz-loader[data-exit="fade"] {
+  opacity: 0;
+  visibility: hidden;
+}
+.biz-loader__logo {
+  transition:
+    transform 0.6s cubic-bezier(0.76, 0, 0.24, 1),
+    opacity 0.45s ease;
+}
+html[data-loader="exit"] .biz-loader__logo {
+  transform: translateY(-7vh);
+  opacity: 0;
+}
+html[data-loader="exit"] .biz-loader[data-exit="fade"] .biz-loader__logo {
+  transform: scale(0.97);
+}
+
+/* Reduced motion: the finished logo, then a plain fade */
+@media (prefers-reduced-motion: reduce) {
+  .biz-loader *,
+  .biz-loader *::before,
+  .biz-loader *::after {
+    animation: none !important;
+  }
+  .biz-loader,
+  .biz-loader[data-exit] {
+    transition: opacity 0.3s ease !important;
+  }
+  html[data-loader="exit"] .biz-loader,
+  html[data-loader="exit"] .biz-loader[data-exit] {
+    transform: none;
+    clip-path: none;
+    opacity: 0;
+  }
+  html[data-loader="exit"] .biz-loader__logo {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* While it shows, the page's own CSS entrances hold (they play as it exits; JS ones use lib/loader) */
+html[data-loading] :not(.biz-loader, .biz-loader *),
+html[data-loading] :not(.biz-loader, .biz-loader *)::before,
+html[data-loading] :not(.biz-loader, .biz-loader *)::after {
+  animation-play-state: paused !important;
+}
+
+/* Kolo's loader: the night, the logo drawn in bone with its spark accent while a warm glow comes up
+   behind it, like a lamp warming; then it flickers off like a filament and the night fades to the page */
+:root {
+  --loader-bg: var(--night);
+  --loader-ink: var(--bone);
+  --logo-font: var(--font-display);
+}
+.biz-loader::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse 46% 38% at 50% 50%, rgba(255, 178, 36, 0.11), rgba(255, 178, 36, 0) 70%);
+  animation: biz-warm 1.4s ease-out 0.2s both;
+}
+@keyframes biz-warm {
+  from {
+    opacity: 0;
+  }
+}
+html[data-loader="exit"] .biz-loader__logo {
+  animation: biz-flicker 0.42s linear both;
+}
+@keyframes biz-flicker {
+  0% {
+    opacity: 1;
+  }
+  20% {
+    opacity: 0.35;
+  }
+  32% {
+    opacity: 1;
+  }
+  52% {
+    opacity: 0.2;
+  }
+  64% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .biz-loader::before {
+    animation: none;
+  }
+  html[data-loader="exit"] .biz-loader__logo {
+    animation: none;
+  }
+}

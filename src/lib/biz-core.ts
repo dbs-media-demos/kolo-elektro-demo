@@ -3,6 +3,8 @@
  * On the concept site it's the fictional one (defaultBiz in ./biz); on a preview it's a real
  * business from the CRM: name, phone, address, hours and Google rating, nothing else.
  */
+import type { BizLogo } from "./logo";
+
 export type Lang = "en" | "sr";
 
 /** 0 = Sunday; times "HH:MM" in the business's timezone; null = closed */
@@ -28,7 +30,14 @@ export type Biz = {
   rating: { value: number; count: number } | null;
   /** A personalised preview: other pages say "comes with the full site" */
   preview: boolean;
+  /** Their own logo (Forge draws it for the meeting): the page loader, header and footer. null = their name as text */
+  logo: BizLogo | null;
+  /** The towns they serve, their own first ([] = only `area`) */
+  areas: string[];
 };
+
+/** The towns a preview names: theirs from the CRM, else just their own town. */
+export const areasOf = (biz: Pick<Biz, "areas" | "area">) => (biz.areas.length ? biz.areas : biz.area ? [biz.area] : []);
 
 export const telOf = (biz: Pick<Biz, "phone">) => (biz.phone ? `tel:${biz.phone}` : undefined);
 
@@ -150,6 +159,8 @@ export function bizFromCrm(b: Record<string, unknown> & { address: Biz["address"
     hoursSummary: s(b.hoursSummary),
     rating: (b.rating as Biz["rating"]) ?? null,
     preview: true,
+    logo: b.logo && typeof b.logo === "object" && typeof (b.logo as { svg?: unknown }).svg === "string" && s((b.logo as { svg: string }).svg).trim() ? { svg: (b.logo as { svg: string }).svg } : null,
+    areas: Array.isArray(b.areas) ? (b.areas as unknown[]).filter((a): a is string => typeof a === "string" && a.trim() !== "").slice(0, 8) : [],
   };
 }
 

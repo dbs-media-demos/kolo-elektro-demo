@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
+import { whenLoaderDone } from "@/lib/loader";
 
 /**
  * The hero: a real distribution board on a dark wall, built from primitives (no model files).
@@ -27,6 +28,8 @@ export type PanelSceneOptions = {
   still?: "on" | "off";
   /** The first 2 s on screen ran too slowly for this machine: the loop has stopped for good. */
   onSlow?: () => void;
+  /** The name at the top of the circuit directory card (a preview: the lead's) */
+  label?: string;
 };
 
 export type PanelScene = {
@@ -99,7 +102,7 @@ function plasterBump() {
   return tex;
 }
 
-function directoryTexture() {
+function directoryTexture(label = "KOLO ELEKTRO") {
   const rows = ["F1  svetlo dnevna", "F2  svetlo spavaća", "F3  kuhinja – šporet", "F4  kuhinja – utičnice", "F5  kupatilo – bojler", "F6  veš mašina", "F7  klima dnevna", "F8  punjač garaža", "F9  dvorište"];
   return canvasTexture(512, 660, (c) => {
     c.fillStyle = "#e9e5d8";
@@ -114,7 +117,7 @@ function directoryTexture() {
     }
     c.fillStyle = "#23241f";
     c.font = "500 26px ui-monospace, monospace";
-    c.fillText("KOLO ELEKTRO", 34, 62);
+    c.fillText(label, 34, 62, 444);
     c.fillStyle = "#1c2a55";
     c.font = '600 40px "Segoe Print", "Bradley Hand", cursive';
     rows.forEach((r, i) => {
@@ -267,7 +270,7 @@ export async function createPanelScene(canvas: HTMLCanvasElement, opts: PanelSce
     blue: keep(new THREE.MeshStandardMaterial({ color: 0x1d62b8, roughness: 0.36 })),
     earth: keep(new THREE.MeshStandardMaterial({ map: keep(earthTexture()), roughness: 0.38 })),
     print: keep(new THREE.MeshStandardMaterial({ map: keep(printTexture()), roughness: 0.6 })),
-    directory: keep(new THREE.MeshStandardMaterial({ map: keep(directoryTexture()), roughness: 0.82 })),
+    directory: keep(new THREE.MeshStandardMaterial({ map: keep(directoryTexture(opts.label)), roughness: 0.82 })),
     lamp: keep(new THREE.MeshStandardMaterial({ color: 0x191a17, roughness: 0.42, metalness: 0.65, side: THREE.DoubleSide })),
     bulb: keep(new THREE.MeshBasicMaterial({ color: 0x4a4436, toneMapped: false })),
   };
@@ -892,6 +895,7 @@ export async function createPanelScene(canvas: HTMLCanvasElement, opts: PanelSce
   };
 
   let bootTimer = 0;
+  let unwait = () => {};
 
   // ── Loop ──
   let raf = 0;
@@ -923,7 +927,8 @@ export async function createPanelScene(canvas: HTMLCanvasElement, opts: PanelSce
       firstFrame = true;
       opts.onFirstFrame?.();
       // The canvas fades in on the same dark board as the still; a beat later the main closes
-      if (!opts.still) bootTimer = window.setTimeout(() => setPower(true), 900);
+      // (a lead's logo loader first: the board powers up in view, once it has gone)
+      if (!opts.still) unwait = whenLoaderDone(() => (bootTimer = window.setTimeout(() => setPower(true), 900)));
     }
     if (fresh) {
       fresh = false;
@@ -1018,6 +1023,7 @@ export async function createPanelScene(canvas: HTMLCanvasElement, opts: PanelSce
       frameCamera(scroll);
     },
     dispose() {
+      unwait();
       window.clearTimeout(bootTimer);
       api.stop();
       disposables.forEach((d) => d.dispose());

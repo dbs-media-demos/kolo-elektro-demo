@@ -35,7 +35,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="sr-Latn" className={`${display.variable} ${sans.variable} ${mono.variable} ${hand.variable}`}>
+    <html lang="sr-Latn" suppressHydrationWarning className={`${display.variable} ${sans.variable} ${mono.variable} ${hand.variable}`}>
       <body className="min-h-dvh">
         <link rel="preload" href="/fonts/geologica-phone.woff2" as="font" type="font/woff2" crossOrigin="anonymous" media={PHONE_MEDIA} />
         <link rel="preload" href="/fonts/instrument-phone.woff2" as="font" type="font/woff2" crossOrigin="anonymous" media={PHONE_MEDIA} />

@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import { Logo } from "@/components/brand/Logo";
 import { useBiz } from "@/components/preview/BizContext";
+import { inlineLogo } from "@/lib/logo";
 import { telOf } from "@/lib/biz-core";
 import { useT } from "@/lib/i18n";
 import { NAV } from "./nav";
@@ -50,7 +51,12 @@ export function Header() {
     >
       <div className="flex h-[var(--header-h)] items-center justify-between gap-4 px-[var(--gutter)]">
         <a href={home} className="relative z-10 min-w-0" aria-label={`${biz.shortName}, ${t("home")}`} data-no-translate>
-          <Logo name={biz.shortName} sub={biz.preview ? undefined : "Elektro"} className="block" />
+          {biz.logo ? (
+            // Their own logo, in the header's ink (currentColor)
+            <span role="img" aria-label={biz.name} className="biz-logo h-9 max-w-[min(16rem,52vw)] max-md:h-8" dangerouslySetInnerHTML={{ __html: inlineLogo(biz.logo.svg) }} />
+          ) : (
+            <Logo name={biz.shortName} sub={biz.preview ? undefined : "Elektro"} className="block" />
+          )}
         </a>
 
         <nav aria-label={t("Main")} className="hidden lg:block">

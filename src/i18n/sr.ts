@@ -136,6 +136,8 @@ export const sr: Record<string, string> = {
   // ── Area ──
   "Where we work": "Gde radimo",
   "{area} and around.": "{area} i okolina.",
+  "We cover": "Pokrivamo",
+  "Areas we cover": "Gde sve radimo",
   "All of Novi Sad, both banks.": "Ceo Novi Sad, obe obale.",
   "average arrival in {place}": "prosečan dolazak: {place}",
   "Service area map of Novi Sad": "Mapa područja rada u Novom Sadu",

@@ -7,7 +7,7 @@ import { PreviewMap } from "@/components/preview/PreviewMap";
 import { OpenBadge } from "@/components/ui/OpenBadge";
 import { Reveal } from "@/components/ui/Reveal";
 import { nodes } from "@/content/offer";
-import { DAY_NAMES, dayRange, weekFromMonday } from "@/lib/biz-core";
+import { DAY_NAMES, areasOf, dayRange, weekFromMonday } from "@/lib/biz-core";
 import { useT } from "@/lib/i18n";
 import { Fuse } from "@/components/ui/Fuse";
 
@@ -37,6 +37,21 @@ export function Area() {
               <span className="ml-2 font-mono text-lg text-spark">min</span>
               <span className="quiet mt-2 block">{t("average arrival in {place}", { place: node.name })}</span>
             </p>
+          )}
+
+          {/* A preview: the towns they cover, each a soldered pad on a trace */}
+          {biz.preview && areasOf(biz).length > 1 && (
+            <div className="mt-8">
+              <p className="t-label quiet">{t("We cover")}</p>
+              <ul className="mt-3 flex flex-wrap gap-2" data-no-translate>
+                {areasOf(biz).map((a, i) => (
+                  <li key={a} className="flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.03] py-1.5 pl-2.5 pr-3.5 text-sm">
+                    <span aria-hidden className={clsx("h-2 w-2 rounded-full border-2", i === 0 ? "border-spark bg-spark" : "border-bone/70")} />
+                    {a}
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
 
           {biz.address.full && (
