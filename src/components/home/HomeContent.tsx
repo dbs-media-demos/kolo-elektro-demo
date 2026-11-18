@@ -13,11 +13,14 @@ import { Faq } from "./Faq";
 import { Area } from "./Area";
 import { Contact } from "./Contact";
 
-/** The homepage, shared by the concept site (/, /en) and personalised previews (/for/<token>). */
-export function HomeContent() {
+/**
+ * The homepage, shared by the concept site (/, /en) and personalised previews (/for/<token>).
+ * `hero="v2"` is the same page with the no-3D hero (/v2, /en/v2, /for/<token>/v2).
+ */
+export function HomeContent({ hero = "3d" }: { hero?: "3d" | "v2" }) {
   return (
     <>
-      <Hero />
+      <Hero variant={hero} />
       <Plan />
       <Services />
       <Faults />

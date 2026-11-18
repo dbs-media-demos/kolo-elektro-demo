@@ -13,6 +13,10 @@ import { num, telOf } from "@/lib/biz-core";
 import { BIG_SCREEN, loadGsap, prefersReducedMotion } from "@/lib/motion";
 import { useT } from "@/lib/i18n";
 import type { PanelScene } from "./panelScene";
+import { HeroLamp } from "./HeroLamp";
+
+/** A transparent pixel: on /v2 the stills are for phones only, so a wide screen downloads none of them. */
+const NONE = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
 /** Set when the board ran too slowly: the rest of the visit keeps the stills. */
 const SLOW_KEY = "kolo-3d";
@@ -59,8 +63,12 @@ const gpuContext = (cv: HTMLCanvasElement, still: boolean) => {
  * rest of the visit stays on stills. Phones and tablets keep stills rendered from the same desktop
  * scene: the lit one crossfades in once (the power-up), and the main switch flips between the two.
  * Reduced motion, no real graphics chip or Save-Data keep a still of the lit board.
+ *
+ * `variant="v2"` (the /v2 pages) never touches three.js: from 900 px up the board gives way to
+ * HeroLamp (SVG + CSS), with the same copy, scroll hand-over and main switch; phones keep the stills.
  */
-export function Hero() {
+export function Hero({ variant = "3d" }: { variant?: "3d" | "v2" }) {
+  const v2 = variant === "v2";
   const biz = useBiz();
   const t = useT();
   const section = useRef<HTMLElement>(null);
@@ -74,6 +82,12 @@ export function Hero() {
   const [litReady, setLitReady] = useState(false);
   /** The live board is handing over to the still underneath it. */
   const [leaving, setLeaving] = useState(false);
+  /** /v2: the visitor has flipped the lamp at least once (until then its CSS power-up plays) */
+  const [flipped, setFlipped] = useState(false);
+  const flip = () => {
+    setFlipped(true);
+    setPower((p) => !(p ?? true));
+  };
 
   useEffect(() => {
     const cv = canvas.current;
@@ -82,7 +96,7 @@ export function Hero() {
     const conn = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
     const big = window.matchMedia(BIG_SCREEN).matches;
     // scripts/capture-stills.mjs renders the fallback stills from the scene itself, on a big screen
-    const still = big ? (new URLSearchParams(window.location.search).get("still") as "on" | "off" | null) : null;
+    const still = big && !v2 ? (new URLSearchParams(window.location.search).get("still") as "on" | "off" | null) : null;
 
     // Where the hero is a tall scroll flight (big screen, motion allowed), the copy leaves with the scroll
     let onScroll = (p: number) => void p;
@@ -107,14 +121,21 @@ export function Hero() {
               copy.current.style.transform = `translateY(${-p * 70}px)`;
               copy.current.style.pointerEvents = a < 0.2 ? "none" : "";
             }
-            if (fade.current) fade.current.style.opacity = String(Math.max(0, (p - 0.72) / 0.28));
+            // /v2 keeps its lit lamp on screen as the next section scrolls in, so no screen goes empty
+            if (fade.current && !v2) fade.current.style.opacity = String(Math.max(0, (p - 0.72) / 0.28));
             onScroll(p);
           },
         });
       });
 
+    // /v2: the scroll moves in on the lamp
+    if (v2)
+      onScroll = (p) => {
+        sec.style.setProperty("--fly", p.toFixed(4));
+      };
+
     // The graphics chip is only asked about on a big screen that may run the board, once the page is idle
-    if (!big || (!still && (prefersReducedMotion() || conn?.saveData || remembered()))) {
+    if (v2 || !big || (!still && (prefersReducedMotion() || conn?.saveData || remembered()))) {
       // No scene: the lit still with a main switch. Phones see the dark board first, then the power-up.
       const on = () => {
         setMode("still");
@@ -269,7 +290,7 @@ export function Hero() {
       release.current();
       release.current = () => {};
     };
-  }, []);
+  }, [v2]);
 
   // Handing back: once the still under the canvas is in place, the canvas fades out and the renderer is freed
   useEffect(() => {
@@ -289,14 +310,16 @@ export function Hero() {
 
   const alt = t("A distribution board with neat rows of breakers on a dark wall, under one warm pendant lamp");
   const common = { alt, sizes: "100vw", quality: 75 };
-  const { props: { srcSet: dimW } } = getImageProps({ ...common, src: dimWide });
+  const { props: { srcSet: dimW3d } } = getImageProps({ ...common, src: dimWide });
   const { props: { srcSet: dimT, ...img } } = getImageProps({ ...common, src: dimTall, loading: "eager" });
-  const { props: { srcSet: litW } } = getImageProps({ ...common, src: litWide });
+  const { props: { srcSet: litW3d } } = getImageProps({ ...common, src: litWide });
+  const dimW = v2 ? NONE : dimW3d;
+  const litW = v2 ? NONE : litW3d;
   const { props: { srcSet: litT, ...imgLit } } = getImageProps({ ...common, src: litTall });
   const lit = mode === "still" && power === true;
 
   return (
-    <section ref={section} id="top" aria-labelledby="hero-title" className="hero sec-night relative">
+    <section ref={section} id="top" aria-labelledby="hero-title" className="hero sec-night relative" data-hero={v2 ? "v2" : undefined}>
       <div data-stage className="sticky top-0 isolate h-[100svh] overflow-hidden max-[899px]:h-full">
         <div className="hero-still" aria-hidden={mode === "live"}>
           <picture>
@@ -316,9 +339,10 @@ export function Hero() {
           )}
         </div>
         <canvas ref={canvas} className="hero-canvas" aria-hidden />
+        {v2 && <HeroLamp power={flipped ? (power === false ? "off" : "on") : undefined} onToggle={flip} />}
         <div className="hero-scrim" aria-hidden />
 
-        <div ref={copy} className="relative flex h-full flex-col justify-end px-[var(--gutter)] pb-7 pt-24 min-[900px]:justify-center min-[900px]:pb-14">
+        <div ref={copy} className={`${v2 ? "pointer-events-none " : ""}relative flex h-full flex-col justify-end px-[var(--gutter)] pb-7 pt-24 min-[900px]:justify-center min-[900px]:pb-14`}>
           <div className="hero-copy relative max-w-[46rem] min-[900px]:max-w-[52%]">
             <p className="anim-fade flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[0.78rem] font-medium uppercase tracking-[0.1em] md:text-[0.86rem]" style={{ "--d": "0.1s" } as CSSProperties}>
               <span className="text-spark">{t("Electrician")}</span>
@@ -379,10 +403,10 @@ export function Hero() {
         {mode !== "dim" && power !== null && (
           <button
             type="button"
-            onClick={() => (mode === "live" ? scene.current?.toggle() : setPower(!power))}
+            onClick={() => (mode === "live" ? scene.current?.toggle() : v2 ? flip() : setPower(!power))}
             aria-pressed={power}
             aria-label={power ? t("Main switch: on") : t("Main switch: off")}
-            className="anim-fade absolute right-[var(--gutter)] top-[calc(var(--header-h)+0.5rem)] flex h-11 min-w-11 items-center justify-center gap-2.5 rounded-full border border-white/15 bg-night/50 text-xs text-bone backdrop-blur-md transition-colors hover:border-white/40 min-[900px]:bottom-8 min-[900px]:top-auto min-[900px]:justify-start min-[900px]:py-1 min-[900px]:pl-1.5 min-[900px]:pr-3.5"
+            className={`${v2 ? "min-[900px]:hidden " : ""}anim-fade absolute right-[var(--gutter)] top-[calc(var(--header-h)+0.5rem)] flex h-11 min-w-11 items-center justify-center gap-2.5 rounded-full border border-white/15 bg-night/50 text-xs text-bone backdrop-blur-md transition-colors hover:border-white/40 min-[900px]:bottom-8 min-[900px]:top-auto min-[900px]:justify-start min-[900px]:py-1 min-[900px]:pl-1.5 min-[900px]:pr-3.5`}
           >
             <span className="breaker" data-on={power} style={{ "--w": "1.25rem", "--h": "1.95rem" } as CSSProperties} aria-hidden>
               <i />

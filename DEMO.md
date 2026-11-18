@@ -9,13 +9,18 @@
 - Stack: Next.js 16.3.6, React 19.2.8, Tailwind v4, three.js 0.170, GSAP, Lenis
 - Palette: #0C0D0C night · #151614 graphite · #A3A59C ash · #EFEDE6 bone · #FFB224 spark (the one loud colour) · #8F5400 spark on light. Brown, blue and green-yellow appear only on wires.
 - Fonts: Geologica (display), Instrument Sans (body), JetBrains Mono (labels), Caveat (the handwriting on the directory and report); all with latin-ext
-- Routes: `/`, `/en`, `/for/<token>` (CRM previews), 404, robots, sitemap, manifest, OG image
+- Routes: `/`, `/en`, `/for/<token>` (CRM previews), and the same three with `/v2` on the end (the homepage without 3D), 404, robots, sitemap, manifest, OG image
 
 ## Signature features
 - Live 3D distribution board in the hero, with a swaying pendant, real moving shadows, a pointer headlamp and a clickable main breaker
 - A flat wired by the scroll, from bare walls to every room lit
 - A symptom picker that reshapes a live oscilloscope trace
 - An old electricity meter as the price estimator
+
+## Two versions of the homepage (2026-11-18)
+- `/`, `/en`, `/for/<token>`: the live 3D board. `/v2`, `/en/v2`, `/for/<token>/v2`: the same page (`HomeContent hero="v2"`, `Hero variant="v2"`) with no three.js at all, for a slow laptop or a lead who doesn't want 3D. Only the hero differs; `/v2` is noindex with its canonical on `/`.
+- The /v2 hero (`src/components/hero/HeroLamp.tsx`, SVG + CSS, styles under "hero /v2" in globals.css): a wall with its chase still open, three conductors running up from a light switch through a junction box, and a filament bulb on its cord. On first paint the switch flips (0.25 s), the current runs up the wall and down the cord, and the bulb strikes on at 1.3 s with the headline's filament; then a pulse every 4.5 s and a slow sway. The switch and the bulb toggle the light; the pointer leans the lamp; on a big screen the scroll pans the bulb to the middle and moves in, with a 230 V · 50 Hz readout. From 900 px up; phones get exactly the stills of `/`.
+- Measured 2026-11-18 on the production build: /v2, /en/v2 and /for/<token>/v2 at 1440 px load 0 bytes of three.js; the hero moves at 0.25 s; no frame over 8 ms in the intro; with 4x CPU the scroll scene has no long tasks. Phones (375 px, 4x CPU, slow 4G): JS 190 KB, LCP ~1.2 s, CLS 0, TBT 88-102 ms. `node scripts/v2-check.mjs <outDir>` repeats the desktop check with a stand-in CRM.
 
 ## Personalised previews
 - Shared kit from the other demos: `src/lib/biz-core.ts`, `biz.ts`, `preview.ts`, `src/components/preview/*`, `src/app/for/[token]`

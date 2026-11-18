@@ -37,6 +37,11 @@ export const sr: Record<string, string> = {
   "{count} Google reviews": "{count} Google recenzija",
   "Main switch: on": "Glavna sklopka: uključena",
   "Main switch: off": "Glavna sklopka: isključena",
+  "Light: on": "Svetlo: uključeno",
+  "Light: off": "Svetlo: isključeno",
+  "A light switch, the wiring in the wall and a filament bulb": "Prekidač, instalacija u zidu i sijalica sa vidljivim vlaknom",
+  "NYM-J 3×1.5 mm²": "PP-Y 3×1,5 mm²",
+  "measured, signed": "izmereno, potpisano",
 
   // ── Plan ──
   "New wiring": "Nova instalacija",

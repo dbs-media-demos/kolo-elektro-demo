@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type CSSProperties } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import { Logo } from "@/components/brand/Logo";
 import { useBiz } from "@/components/preview/BizContext";
@@ -18,7 +19,9 @@ export function Header() {
   const t = useT();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
-  const home = biz.preview ? "#top" : biz.lang === "en" ? "/en" : "/";
+  // /v2 and /en/v2 (the homepage without 3D) keep to their own version
+  const v2 = usePathname()?.endsWith("/v2") ?? false;
+  const home = biz.preview ? "#top" : (biz.lang === "en" ? "/en" : "") + (v2 ? "/v2" : "") || "/";
 
   useEffect(() => {
     const on = () => setScrolled(window.scrollY > 40);
@@ -63,7 +66,7 @@ export function Header() {
         </nav>
 
         <div className="relative z-10 flex shrink-0 items-center gap-2 sm:gap-3">
-          {!biz.preview && <LangSwitch lang={biz.lang} label={t("Language")} />}
+          {!biz.preview && <LangSwitch lang={biz.lang} label={t("Language")} v2={v2} />}
           {biz.phone && (
             <a href={telOf(biz)} className="hidden text-sm font-semibold tabular-nums xl:block" data-no-translate>
               {biz.phoneDisplay}
@@ -114,13 +117,13 @@ export function Header() {
 }
 
 /** SR | EN: a tiny two-position switch. Kept in the bar on every width so the English is one tap away. */
-function LangSwitch({ lang, label }: { lang: "en" | "sr"; label: string }) {
+function LangSwitch({ lang, label, v2 }: { lang: "en" | "sr"; label: string; v2: boolean }) {
   return (
     <div className="t-label flex items-center rounded-full border border-white/20 p-0.5 text-[0.65rem]" role="group" aria-label={label}>
-      <Link href="/" hrefLang="sr" aria-current={lang === "sr" ? "true" : undefined} className={clsx("flex min-h-9 items-center rounded-full px-2.5", lang === "sr" ? "bg-bone text-night" : "text-ash hover:text-bone")}>
+      <Link href={v2 ? "/v2" : "/"} hrefLang="sr" aria-current={lang === "sr" ? "true" : undefined} className={clsx("flex min-h-9 items-center rounded-full px-2.5", lang === "sr" ? "bg-bone text-night" : "text-ash hover:text-bone")}>
         SR
       </Link>
-      <Link href="/en" hrefLang="en" aria-current={lang === "en" ? "true" : undefined} className={clsx("flex min-h-9 items-center rounded-full px-2.5", lang === "en" ? "bg-bone text-night" : "text-ash hover:text-bone")}>
+      <Link href={v2 ? "/en/v2" : "/en"} hrefLang="en" aria-current={lang === "en" ? "true" : undefined} className={clsx("flex min-h-9 items-center rounded-full px-2.5", lang === "en" ? "bg-bone text-night" : "text-ash hover:text-bone")}>
         EN
       </Link>
     </div>
