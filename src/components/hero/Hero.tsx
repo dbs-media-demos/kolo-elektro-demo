@@ -301,9 +301,10 @@ export function Hero({ variant = "3d" }: { variant?: "3d" | "v2" }) {
 
     // After the page, when the browser is idle: first paint and hydration never wait for three.js
     let idle = 0;
+    let timer = 0;
     const later = () => {
-      const ric = window.requestIdleCallback ?? ((fn: () => void) => window.setTimeout(fn, 300));
-      idle = ric(() => void boot(), { timeout: 2500 } as IdleRequestOptions) as number;
+      if (typeof window.requestIdleCallback === "function") idle = window.requestIdleCallback(() => void boot(), { timeout: 2500 });
+      else timer = window.setTimeout(() => void boot(), 300);
     };
     if (document.readyState === "complete") later();
     else window.addEventListener("load", later, { once: true });
@@ -312,7 +313,9 @@ export function Hero({ variant = "3d" }: { variant?: "3d" | "v2" }) {
       alive = false;
       window.removeEventListener("load", later);
       document.removeEventListener("visibilitychange", gate);
-      if (idle) window.cancelIdleCallback?.(idle);
+      // each id with its own cancel: an idle-callback id passed to clearTimeout (or the reverse) can kill an unrelated timer
+      if (idle) window.cancelIdleCallback(idle);
+      if (timer) window.clearTimeout(timer);
       killSt();
       detach();
       release.current();
