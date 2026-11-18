@@ -14,7 +14,7 @@ import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js
  *
  * Built so it never stutters: the build yields to the page between steps, warm() compiles every
  * shader asynchronously and draws one frame while the canvas is still hidden, and the first two
- * seconds on screen are timed. Under ~45 fps, one frame over 100 ms, or more than 2 ms of main-thread
+ * seconds on screen are timed. Under ~45 fps, a 3rd frame over 100 ms or one over 400 ms, or more than 2 ms of main-thread
  * work a frame (a weak CPU behind a good graphics card), it stops and calls onSlow.
  */
 
@@ -904,6 +904,10 @@ export async function createPanelScene(canvas: HTMLCanvasElement, opts: PanelSce
   let watchMs = 0;
   let watchFrames = 0;
   let watchCost = 0;
+  // The first frames after the board appears pay one-off costs (the GPU's first real draw took
+  // 371 ms on a refresh on a PC that then ran 112 fps, 18 Nov): they aren't judged
+  let warmFrames = 5;
+  let hitches = 0;
 
   const tick = (now: number) => {
     if (!running) return;
@@ -926,14 +930,20 @@ export async function createPanelScene(canvas: HTMLCanvasElement, opts: PanelSce
       return;
     }
     if (!watching) return;
+    if (warmFrames > 0) {
+      warmFrames--;
+      return;
+    }
+    // A hitch or two (a font, an image decode, another tab) isn't a slow machine: the 3rd one, or one long freeze, is
+    const hitched = raw > 100 && (++hitches >= 3 || raw > 400);
     watchMs += raw;
     watchFrames++;
     watchCost += cost;
     const done = watchMs >= 2000;
-    // Slow: under ~45 fps, one frame over 100 ms, or the board's own work over 2 ms a frame. A fast
+    // Slow: under ~45 fps, a 3rd frame over 100 ms or one over 400 ms, or the board's own work over 2 ms a frame. A fast
     // graphics card can hold a high frame rate on a weak CPU, but then every scroll fights the board
     // for the main thread (0.4-0.7 ms here, 2.7-5.4 ms with Chrome's 4x CPU slowdown).
-    if (raw > 100 || (done && ((watchFrames * 1000) / watchMs < 45 || watchCost / watchFrames > 2))) {
+    if (hitched || (done && ((watchFrames * 1000) / watchMs < 45 || watchCost / watchFrames > 2))) {
       watching = false;
       api.stop();
       opts.onSlow?.();

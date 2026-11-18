@@ -18,15 +18,34 @@ import { HeroLamp } from "./HeroLamp";
 /** A transparent pixel: on /v2 the stills are for phones only, so a wide screen downloads none of them. */
 const NONE = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
-/** Set when the board ran too slowly: the rest of the visit keeps the stills. */
-const SLOW_KEY = "kolo-3d";
+/**
+ * No real graphics chip: the rest of the visit keeps the stills at once ("gpu" under NO_3D). The
+ * board running too slowly is counted once per page load (SLOW) and keeps the stills only after 2
+ * slow loads: on 18 Nov one slow start on a refresh (the GPU's first draw) kept a fast PC on the
+ * still for the whole tab.
+ */
+const NO_3D = "kolo-3d";
+const SLOW = "kolo-3d-slow";
+const SLOW_LIMIT = 2;
+// This page load ran slow: a board mounted again on it stays a still too (counted once per load)
+let slowHere = false;
 
 const remembered = () => {
+  if (slowHere) return true;
   try {
-    return sessionStorage.getItem(SLOW_KEY) === "still";
+    // only "gpu" counts under the old key: a tab's old "still" (one slow start) doesn't hold any more
+    return sessionStorage.getItem(NO_3D) === "gpu" || Number(sessionStorage.getItem(SLOW) || 0) >= SLOW_LIMIT;
   } catch {
     return false;
   }
+};
+
+const markNo3D = (why: "gpu" | "slow") => {
+  try {
+    if (why === "gpu") sessionStorage.setItem(NO_3D, "gpu");
+    else if (!slowHere) sessionStorage.setItem(SLOW, String(Number(sessionStorage.getItem(SLOW) || 0) + 1));
+  } catch {}
+  if (why === "slow") slowHere = true;
 };
 
 /**
@@ -178,13 +197,11 @@ export function Hero({ variant = "3d" }: { variant?: "3d" | "v2" }) {
     };
     document.addEventListener("visibilitychange", gate);
 
-    // Too slow here: remember it for the visit, stop drawing, and let the still take over again
-    const giveUp = () => {
+    // No real GPU, or too slow here: note it (see NO_3D), stop drawing, and let the still take over again
+    const giveUp = (why: "gpu" | "slow") => {
       if (gaveUp || !alive) return;
       gaveUp = true;
-      try {
-        sessionStorage.setItem(SLOW_KEY, "still");
-      } catch {}
+      markNo3D(why);
       gate();
       detach();
       setPower((p) => p ?? true);
@@ -200,7 +217,7 @@ export function Hero({ variant = "3d" }: { variant?: "3d" | "v2" }) {
     const boot = async () => {
       // No real graphics chip: the still stays, and three.js is never downloaded
       const gl = gpuContext(cv, Boolean(still));
-      if (!gl) return giveUp();
+      if (!gl) return giveUp("gpu");
       let s: PanelScene;
       try {
         const { createPanelScene } = await import("./panelScene");
@@ -213,11 +230,11 @@ export function Hero({ variant = "3d" }: { variant?: "3d" | "v2" }) {
             setMode("live");
           },
           onPower: setPower,
-          onSlow: giveUp,
+          onSlow: () => giveUp("slow"),
         });
       } catch {
         // No WebGL context after all, or it failed to build: the still stays
-        if (!still) giveUp();
+        if (!still) giveUp("gpu");
         return;
       }
       if (!alive) return s.dispose();
